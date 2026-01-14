@@ -1,0 +1,11 @@
+<h2>Connexion</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="submit" value="Se connecter">
+    <a href="{% url 'register' %}" class="btn btn-create-account">
+    Créer un compte
+    </a>
+</form>

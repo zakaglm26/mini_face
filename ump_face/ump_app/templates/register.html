@@ -1,0 +1,506 @@
+
+{% block title %}Inscription - Mon Face{% endblock %}
+
+{% block bodyId %}registerPage{% endblock %}
+
+{% block contenu %}
+<div class="register-container">
+    <!-- En-tête -->
+    <div class="header">
+        <h1>📝 Créer un compte</h1>
+        <p class="subtitle">Rejoignez la communauté MonFace</p>
+    </div>
+    
+    <!-- ========================================
+         SÉLECTEUR DU TYPE D'UTILISATEUR
+         ======================================== -->
+    <div class="user-type-selector">
+        <p class="selection-label">Je suis :</p>
+        <div class="button-group">
+            <!-- Bouton Étudiant -->
+            <a href="{% url 'register' %}?type=student" 
+               class="type-button {% if user_type == 'student' %}active{% endif %}">
+                <span class="icon">🎓</span>
+                <span class="text">Étudiant</span>
+            </a>
+            
+            <!-- Bouton Employé -->
+            <a href="{% url 'register' %}?type=employee" 
+               class="type-button {% if user_type == 'employee' %}active{% endif %}">
+                <span class="icon">💼</span>
+                <span class="text">Employé</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Afficher les erreurs globales du formulaire -->
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>⚠️ Erreur :</strong>
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+    
+    <!-- ========================================
+         FORMULAIRE D'INSCRIPTION
+         ======================================== -->
+    <form action="{% url 'register' %}" method="post" class="register-form">
+        {% csrf_token %}
+        
+        <!-- Champ caché pour stocker le type d'utilisateur -->
+        <input type="hidden" name="user_type" value="{{ user_type }}">
+        
+        <div class="form-sections">
+            <!-- Section Informations personnelles -->
+            <div class="form-section">
+                <h3>👤 Informations personnelles</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_nom">{{ form.nom.label }} *</label>
+                        {{ form.nom }}
+                        {% if form.nom.errors %}
+                            <div class="error-message">{{ form.nom.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_prenom">{{ form.prenom.label }} *</label>
+                        {{ form.prenom }}
+                        {% if form.prenom.errors %}
+                            <div class="error-message">{{ form.prenom.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_date_naissance">{{ form.date_naissance.label }} *</label>
+                    {{ form.date_naissance }}
+                    {% if form.date_naissance.errors %}
+                        <div class="error-message">{{ form.date_naissance.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_tlf">{{ form.tlf.label }} *</label>
+                    {{ form.tlf }}
+                    {% if form.tlf.errors %}
+                        <div class="error-message">{{ form.tlf.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Section Connexion -->
+            <div class="form-section">
+                <h3>🔐 Informations de connexion</h3>
+                
+                <div class="form-group">
+                    <label for="id_email">{{ form.email.label }} *</label>
+                    {{ form.email }}
+                    {% if form.email.help_text %}
+                        <small class="help-text">{{ form.email.help_text }}</small>
+                    {% endif %}
+                    {% if form.email.errors %}
+                        <div class="error-message">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_password">{{ form.password.label }} *</label>
+                        {{ form.password }}
+                        {% if form.password.help_text %}
+                            <small class="help-text">{{ form.password.help_text }}</small>
+                        {% endif %}
+                        {% if form.password.errors %}
+                            <div class="error-message">{{ form.password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_confirm_password">{{ form.confirm_password.label }} *</label>
+                        {{ form.confirm_password }}
+                        {% if form.confirm_password.errors %}
+                            <div class="error-message">{{ form.confirm_password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section Faculté (commune aux deux types) -->
+            <div class="form-section">
+                <h3>🏛️ Affiliation</h3>
+                
+                <div class="form-group">
+                    <label for="id_faculty">{{ form.faculty.label }} *</label>
+                    {{ form.faculty }}
+                    {% if form.faculty.errors %}
+                        <div class="error-message">{{ form.faculty.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- ========================================
+                 SECTION SPÉCIFIQUE ÉTUDIANT
+                 ======================================== -->
+            {% if user_type == 'student' %}
+            <div class="form-section">
+                <h3>📚 Informations académiques</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_annee">{{ form.annee.label }} *</label>
+                        {{ form.annee }}
+                        {% if form.annee.help_text %}
+                            <small class="help-text">{{ form.annee.help_text }}</small>
+                        {% endif %}
+                        {% if form.annee.errors %}
+                            <div class="error-message">{{ form.annee.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_cursus">{{ form.cursus.label }} *</label>
+                        {{ form.cursus }}
+                        {% if form.cursus.errors %}
+                            <div class="error-message">{{ form.cursus.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- ========================================
+                 SECTION SPÉCIFIQUE EMPLOYÉ
+                 ======================================== -->
+            {% if user_type == 'employee' %}
+            <div class="form-section">
+                <h3>💼 Informations professionnelles</h3>
+                
+                <div class="form-group">
+                    <label for="id_office">{{ form.office.label }} *</label>
+                    {{ form.office }}
+                    {% if form.office.help_text %}
+                        <small class="help-text">{{ form.office.help_text }}</small>
+                    {% endif %}
+                    {% if form.office.errors %}
+                        <div class="error-message">{{ form.office.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_campus">{{ form.campus.label }} *</label>
+                        {{ form.campus }}
+                        {% if form.campus.errors %}
+                            <div class="error-message">{{ form.campus.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_job">{{ form.job.label }} *</label>
+                        {{ form.job }}
+                        {% if form.job.errors %}
+                            <div class="error-message">{{ form.job.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Boutons d'action -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                ✅ Créer mon compte
+            </button>
+            
+            <a href="{% url 'login' %}" class="btn btn-secondary">
+                ← J'ai déjà un compte
+            </a>
+        </div>
+        
+        <p class="required-note">* Champs obligatoires</p>
+    </form>
+</div>
+
+<!-- Styles CSS -->
+<style>
+    #registerPage {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+    
+    .register-container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        overflow: hidden;
+    }
+    
+    /* En-tête */
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+    
+    .header h1 {
+        font-size: 28px;
+        margin: 0 0 10px 0;
+        border: none;
+        padding: 0;
+        color: white;
+    }
+    
+    .subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    /* Sélecteur de type d'utilisateur */
+    .user-type-selector {
+        padding: 30px;
+        background: #f8f9fa;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .selection-label {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .type-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 25px 20px;
+        background-color: white;
+        border: 3px solid #e0e0e0;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .type-button:hover {
+        border-color: #667eea;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    .type-button.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .type-button .icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+    }
+    
+    .type-button .text {
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    /* Formulaire */
+    .register-form {
+        padding: 30px;
+    }
+    
+    .form-sections {
+        margin-bottom: 20px;
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+    }
+    
+    .form-section h3 {
+        font-size: 18px;
+        color: #667eea;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 14px;
+    }
+    
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: all 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .help-text {
+        display: block;
+        margin-top: 5px;
+        font-size: 13px;
+        color: #666;
+        font-style: italic;
+    }
+    
+    /* Messages d'erreur */
+    .alert {
+        padding: 15px 20px;
+        margin: 0 30px 20px 30px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    
+    .alert-danger {
+        background-color: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+    }
+    
+    .error-message {
+        color: #e74c3c;
+        font-size: 13px;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    /* Boutons */
+    .form-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+    
+    .btn {
+        padding: 14px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    .required-note {
+        text-align: center;
+        font-size: 13px;
+        color: #666;
+        margin-top: 20px;
+        font-style: italic;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        #registerPage {
+            padding: 20px 10px;
+        }
+        
+        .register-container {
+            border-radius: 8px;
+        }
+        
+        .header {
+            padding: 30px 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+        }
+        
+        .user-type-selector {
+            padding: 20px;
+        }
+        
+        .button-group {
+            grid-template-columns: 1fr;
+        }
+        
+        .register-form {
+            padding: 20px;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

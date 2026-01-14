@@ -16,7 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from ump_app import views
+from django.views.generic import RedirectView
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # Administration Django
+    path('admin/', admin.site.urls, name='admin'),
+    
+    # Redirection de la racine vers login
+    path('', RedirectView.as_view(url='/login/', permanent=False), name='home'),
+    
+    # Page de connexion
+    path('login/', views.login, name='login'),
+    
+    # Page d'inscription ← NOUVELLE ROUTE
+    path('register/', views.register, name='register'),
+    
+    # Page d'accueil (protégée)
+    path('welcome/', views.welcome, name='welcome'),
 ]
