@@ -33,4 +33,24 @@ urlpatterns = [
     
     # Page d'accueil (protégée)
     path('welcome/', views.welcome, name='welcome'),
+
+    # Page de profil utilisateur (protégée)
+    path('profile/<int:user_id>/', views.view_profile, name='view_profile'), 
+    
+    # Page de modification du profil (protégée)
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+
+    # Ajouter des amis (protégée)
+    path('friends/add/<int:user_id>/', views.add_friend, name='add_friend'),  
+
+    # Supprimer des amis (protégée)
+    path('friends/remove/<int:user_id>/', views.remove_friend, name='remove_friend'),  
+    
+    # Recherche d'utilisateurs (protégée)
+    path('search/', views.search_users, name='search_users'),  
+
+    # Déconnexion
+    path('logout/', views.logout, name='logout'),
+
+
 ]

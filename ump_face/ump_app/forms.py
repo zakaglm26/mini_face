@@ -1,37 +1,9 @@
 from django import forms
-from .models import Person, Student, Employee
+from .models import Person, Student, Employee , Message
 
-class LoginForm(forms.Form):
-    email = forms.EmailField(label="Email")
-    password = forms.CharField(
-        label="Mot de passe",
-        widget=forms.PasswordInput
-    )
-
-    # Validation personnalisée
-    def clean(self):
-        cleaned_data = super().clean()
-        email = cleaned_data.get("email")
-        password = cleaned_data.get("password")
-
-        if email and password:
-            result = Person.objects.filter(email=email, password=password)
-            if len(result) != 1:
-                raise forms.ValidationError("Email ou mot de passe incorrect")
-
-        return cleaned_data
-
-
-
-
-
-
-
-
-
-# ============================================
-# FORMULAIRE DE LOGIN (déjà existant)
-# ============================================
+# =======================
+# FORMULAIRE DE LOGIN 
+# =======================
 class LoginForm(forms.Form):
     email = forms.EmailField(
         label='Email',
@@ -302,3 +274,260 @@ class EmployeeProfilForm(forms.ModelForm):
             employee.save()
         
         return employee
+    
+
+# ============================================
+# FORMULAIRE DE PUBLICATION DE MESSAGE
+# ============================================
+class MessageForm(forms.ModelForm):
+    """
+    Formulaire pour publier un message
+    """
+    
+    class Meta:
+        model = Message
+        fields = ['contenu']  # On ne demande que le contenu
+        
+        widgets = {
+            'contenu': forms.Textarea(attrs={
+                'class': 'publish-textarea',
+                'placeholder': 'Quoi de neuf ?',
+                'rows': 4,
+            })
+        }
+        
+        labels = {
+            'contenu': '',  # Pas de label visible
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Rendre le champ obligatoire avec un message personnalisé
+        self.fields['contenu'].required = True
+        self.fields['contenu'].error_messages = {
+            'required': 'Le message ne peut pas être vide.'
+        }
+
+
+
+# ============================================
+# FORMULAIRE D'ÉDITION PROFIL ÉTUDIANT
+# ============================================
+class EditStudentForm(forms.ModelForm):
+    """
+    Formulaire pour modifier le profil d'un étudiant
+    """
+    
+    # Champs supplémentaires pour le mot de passe (optionnel)
+    new_password = forms.CharField(
+        label='Nouveau mot de passe (optionnel)',
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Laissez vide pour ne pas changer'
+        })
+    )
+    
+    confirm_password = forms.CharField(
+        label='Confirmer le mot de passe',
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirmez le nouveau mot de passe'
+        })
+    )
+    
+    class Meta:
+        model = Student
+        fields = ['nom', 'prenom', 'email', 'tlf', 'date_naissance', 
+                  'annee', 'cursus', 'faculty']
+        
+        widgets = {
+            'nom': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Votre nom'
+            }),
+            'prenom': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Votre prénom'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'votre@email.com'
+            }),
+            'tlf': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0612345678'
+            }),
+            'date_naissance': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'annee': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'max': 5
+            }),
+            'cursus': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'faculty': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+        }
+        
+        labels = {
+            'nom': 'Nom',
+            'prenom': 'Prénom',
+            'email': 'Email',
+            'tlf': 'Téléphone',
+            'date_naissance': 'Date de naissance',
+            'annee': 'Année',
+            'cursus': 'Cursus',
+            'faculty': 'Faculté',
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+        
+        # Si un nouveau mot de passe est fourni
+        if new_password:
+            if new_password != confirm_password:
+                raise forms.ValidationError(
+                    "Les mots de passe ne correspondent pas."
+                )
+            
+            if len(new_password) < 4:
+                raise forms.ValidationError(
+                    "Le mot de passe doit contenir au moins 4 caractères."
+                )
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        student = super().save(commit=False)
+        
+        # Mettre à jour le mot de passe si fourni
+        new_password = self.cleaned_data.get('new_password')
+        if new_password:
+            student.password = new_password
+        
+        if commit:
+            student.save()
+        
+        return student
+
+
+# ============================================
+# FORMULAIRE D'ÉDITION PROFIL EMPLOYÉ
+# ============================================
+class EditEmployeeForm(forms.ModelForm):
+    """
+    Formulaire pour modifier le profil d'un employé
+    """
+    
+    # Champs supplémentaires pour le mot de passe (optionnel)
+    new_password = forms.CharField(
+        label='Nouveau mot de passe (optionnel)',
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Laissez vide pour ne pas changer'
+        })
+    )
+    
+    confirm_password = forms.CharField(
+        label='Confirmer le mot de passe',
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirmez le nouveau mot de passe'
+        })
+    )
+    
+    class Meta:
+        model = Employee
+        fields = ['nom', 'prenom', 'email', 'tlf', 'date_naissance', 
+                  'office', 'campus', 'job', 'faculty']
+        
+        widgets = {
+            'nom': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Votre nom'
+            }),
+            'prenom': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Votre prénom'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'votre@email.com'
+            }),
+            'tlf': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0612345678'
+            }),
+            'date_naissance': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'office': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'B201'
+            }),
+            'campus': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'job': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'faculty': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+        }
+        
+        labels = {
+            'nom': 'Nom',
+            'prenom': 'Prénom',
+            'email': 'Email',
+            'tlf': 'Téléphone',
+            'date_naissance': 'Date de naissance',
+            'office': 'Bureau',
+            'campus': 'Campus',
+            'job': 'Poste',
+            'faculty': 'Faculté',
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+        
+        # Si un nouveau mot de passe est fourni
+        if new_password:
+            if new_password != confirm_password:
+                raise forms.ValidationError(
+                    "Les mots de passe ne correspondent pas."
+                )
+            
+            if len(new_password) < 4:
+                raise forms.ValidationError(
+                    "Le mot de passe doit contenir au moins 4 caractères."
+                )
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        employee = super().save(commit=False)
+        
+        # Mettre à jour le mot de passe si fourni
+        new_password = self.cleaned_data.get('new_password')
+        if new_password:
+            employee.password = new_password
+        
+        if commit:
+            employee.save()
+        
+        return employee        

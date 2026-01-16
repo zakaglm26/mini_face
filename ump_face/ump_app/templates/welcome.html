@@ -1,5 +1,930 @@
-<h1>Bienvenue</h1>
 
-<p>
-Utilisateur connecté : {{ logged_user.nom }} {{ logged_user.prenom }}
-</p>
+
+
+{% block contenu %}
+<div class="welcome-container">
+    <!-- ========================================
+         HEADER / NAVIGATION
+         ======================================== -->
+    <header class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="logo-icon">📘</span>
+                <span class="logo-text">MonFace</span>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="{% url 'welcome' %}" class="nav-link active">
+                    Accueil
+                </a>
+                <!-- MODIFIÉ : Lien vers mon profil -->
+                <a href="{% url 'view_profile' logged_user.id %}" class="nav-link">
+                    Mon Profil
+                </a>
+                <a href="{% url 'search_users' %}" class="nav-link">Amis</a>
+                
+                <a href="#" class="nav-link">
+                    Messages
+                </a>
+            </nav>
+            
+            <div class="user-menu">
+                <span class="user-name">{{ logged_user.prenom }} {{ logged_user.nom }}</span>
+                <a href="{% url 'logout' %}" class="btn-logout">
+                    Déconnexion
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- ========================================
+         CONTENU PRINCIPAL
+         ======================================== -->
+    <div class="main-content">
+        <!-- Sidebar gauche : Profil utilisateur -->
+        <aside class="sidebar-left">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    {{ logged_user.prenom.0 }}{{ logged_user.nom.0 }}
+                </div>
+                
+                <h2 class="profile-name">
+                    {{ logged_user.prenom }} {{ logged_user.nom }}
+                </h2>
+                
+                {% if logged_user.annee %}
+                    <div class="profile-info">
+                        <p class="user-type">🎓 Étudiant</p>
+                        <p class="user-detail">
+                            <strong>Année :</strong> {{ logged_user.annee }}
+                        </p>
+                        <p class="user-detail">
+                            <strong>Cursus :</strong> {{ logged_user.cursus.titre }}
+                        </p>
+                        <p class="user-detail">
+                            <strong>Faculté :</strong> {{ logged_user.faculty.nom }}
+                        </p>
+                    </div>
+                {% else %}
+                    <div class="profile-info">
+                        <p class="user-type">💼 Employé</p>
+                        <p class="user-detail">
+                            <strong>Poste :</strong> {{ logged_user.job.titre }}
+                        </p>
+                        <p class="user-detail">
+                            <strong>Bureau :</strong> {{ logged_user.office }}
+                        </p>
+                        <p class="user-detail">
+                            <strong>Campus :</strong> {{ logged_user.campus.nom }}
+                        </p>
+                        <p class="user-detail">
+                            <strong>Faculté :</strong> {{ logged_user.faculty.nom }}
+                        </p>
+                    </div>
+                {% endif %}
+                
+                <div class="profile-contact">
+                    <p class="user-detail">
+                        <strong>📧 Email :</strong><br>
+                        {{ logged_user.email }}
+                    </p>
+                    <p class="user-detail">
+                        <strong>📱 Téléphone :</strong><br>
+                        {{ logged_user.tlf }}
+                    </p>
+                </div>
+                
+                <div class="profile-actions">
+                    <!-- MODIFIÉ : Lien vers mon profil -->
+                    <a href="{% url 'view_profile' logged_user.id %}" class="btn-edit-profile">
+                        👤 Voir mon profil
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Amis -->
+            <div class="friends-widget">
+                <h3>👥 Mes amis ({{ logged_user.amis.count }})</h3>
+                {% if logged_user.amis.all %}
+                    <ul class="friends-list">
+                        {% for ami in logged_user.amis.all %}
+                            <!-- MODIFIÉ : Lien vers le profil de l'ami -->
+                            <li class="friend-item">
+                                <a href="{% url 'view_profile' ami.id %}" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; width:100%;">
+                                    <div class="friend-avatar">
+                                        {{ ami.prenom.0 }}{{ ami.nom.0 }}
+                                    </div>
+                                    <span class="friend-name">
+                                        {{ ami.prenom }} {{ ami.nom }}
+                                    </span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-friends">Vous n'avez pas encore d'amis.</p>
+                    <a href="{% url 'search_users' %}" class="btn-add-friend">➕ Ajouter des amis</a>
+                {% endif %}
+            </div>
+        </aside>
+        
+        <!-- Contenu central : Fil d'actualité -->
+        <main class="content-center">
+            <div class="welcome-message">
+                <h1>👋 Bienvenue, {{ logged_user.prenom }} !</h1>
+                <p class="welcome-subtitle">
+                    {% if logged_user.annee %}
+                        Vous êtes étudiant en {{ logged_user.cursus.titre }}, année {{ logged_user.annee }}.
+                    {% else %}
+                        Vous êtes {{ logged_user.job.titre }} à {{ logged_user.faculty.nom }}.
+                    {% endif %}
+                </p>
+            </div>
+            
+            <!-- Formulaire de publication -->
+            <div class="post-form-card">
+                <h3>✍️ Publier un message</h3>
+                
+                <!-- Afficher les erreurs du formulaire -->
+                {% if form.errors %}
+                    <div class="form-errors">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <p>⚠️ {{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <form action="{% url 'welcome' %}" method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Utiliser le formulaire Django -->
+                    {{ form.contenu }}
+                    
+                    <button type="submit" class="btn-publish">
+                        📤 Publier
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Liste des messages -->
+            <div class="messages-feed">
+                <h3>📰 Fil d'actualité</h3>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message-card">
+                            <div class="message-header">
+                                <!-- MODIFIÉ : Avatar cliquable -->
+                                <a href="{% url 'view_profile' message.auteur.id %}" style="text-decoration:none;">
+                                    <div class="message-avatar">
+                                        {{ message.auteur.prenom.0 }}{{ message.auteur.nom.0 }}
+                                    </div>
+                                </a>
+                                <div class="message-author-info">
+                                    <!-- MODIFIÉ : Nom cliquable -->
+                                    <strong>
+                                        <a href="{% url 'view_profile' message.auteur.id %}" style="color:#333; text-decoration:none;">
+                                            {{ message.auteur.prenom }} {{ message.auteur.nom }}
+                                        </a>
+                                    </strong>
+                                    <span class="message-meta">
+                                        {% if message.auteur.annee %}
+                                            🎓 Étudiant
+                                        {% else %}
+                                            💼 {{ message.auteur.job.titre }}
+                                        {% endif %}
+                                        · {{ message.date_publication|date:"d/m/Y à H:i" }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="message-content">
+                                {{ message.contenu|linebreaks }}
+                            </div>
+                            
+                            <div class="message-actions">
+                                <button class="message-action-btn">
+                                    ❤️ J'aime
+                                </button>
+                                <button class="message-action-btn">
+                                    💬 Commenter
+                                </button>
+                                <button class="message-action-btn">
+                                    🔗 Partager
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-messages">
+                        <p>😊 Aucun message pour le moment.</p>
+                        <p>Publiez votre premier message ou ajoutez des amis !</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+        
+        <!-- Sidebar droite : Suggestions -->
+        <aside class="sidebar-right">
+            <div class="suggestions-widget">
+                <h3>💡 Suggestions</h3>
+                <ul class="suggestions-list">
+                    <li>
+                        <span class="suggestion-icon">✏️</span>
+                        <div>
+                            <strong>Complétez votre profil</strong>
+                            <p>Ajoutez une photo de profil</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="suggestion-icon">👥</span>
+                        <div>
+                            <strong>Trouvez des amis</strong>
+                            <p>Connectez-vous avec vos camarades</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="suggestion-icon">💬</span>
+                        <div>
+                            <strong>Publiez un message</strong>
+                            <p>Partagez vos pensées</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="stats-widget">
+                <h3>📊 Statistiques</h3>
+                <div class="stat-item">
+                    <span class="stat-number">{{ logged_user.amis.count }}</span>
+                    <span class="stat-label">Amis</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ messages|length }}</span>
+                    <span class="stat-label">Messages</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Interactions</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<!-- ========================================
+     STYLES CSS
+     ======================================== -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Sora:wght@300;400;500;600&display=swap');
+
+    :root {
+        --bg: #f5f1ea;
+        --bg-accent: #e7eef2;
+        --ink: #0f1a2b;
+        --muted: #5b6778;
+        --card: #ffffff;
+        --line: #e6e0d7;
+        --nav: #0f2b46;
+        --accent: #1f7a7a;
+        --accent-2: #f0c75e;
+        --shadow: 0 10px 30px rgba(15, 26, 43, 0.08);
+        --shadow-hover: 0 14px 40px rgba(15, 26, 43, 0.12);
+        --radius: 16px;
+    }
+
+    #welcomePage {
+        background:
+            radial-gradient(1200px 500px at -10% -20%, rgba(31, 122, 122, 0.18), transparent 60%),
+            radial-gradient(900px 400px at 110% -10%, rgba(240, 199, 94, 0.18), transparent 60%),
+            linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+        font-family: "Sora", "Segoe UI", Arial, sans-serif;
+        color: var(--ink);
+    }
+    
+    .welcome-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* ===== NAVBAR ===== */
+    .navbar {
+        background: linear-gradient(135deg, #0f2b46 0%, #153a5c 100%);
+        box-shadow: 0 8px 30px rgba(15, 43, 70, 0.25);
+        padding: 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    .navbar-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #fef7e3;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        font-family: "Playfair Display", "Times New Roman", serif;
+    }
+    
+    .logo-icon {
+        font-size: 32px;
+    }
+    
+    .nav-links {
+        display: flex;
+        gap: 30px;
+    }
+    
+    .nav-link {
+        color: #fef7e3;
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        transition: all 0.3s;
+        font-weight: 500;
+        border: 1px solid transparent;
+    }
+    
+    .nav-link:hover {
+        background-color: rgba(240, 199, 94, 0.18);
+        border-color: rgba(240, 199, 94, 0.35);
+        transform: translateY(-2px);
+    }
+    
+    .nav-link.active {
+        background-color: rgba(240, 199, 94, 0.25);
+        border-color: rgba(240, 199, 94, 0.45);
+    }
+    
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #fef7e3;
+    }
+    
+    .user-name {
+        font-weight: 600;
+    }
+    
+    .btn-logout {
+        background-color: rgba(240, 199, 94, 0.2);
+        color: #fef7e3;
+        padding: 8px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-weight: 500;
+        border: 1px solid rgba(240, 199, 94, 0.35);
+    }
+    
+    .btn-logout:hover {
+        background-color: rgba(240, 199, 94, 0.35);
+        transform: translateY(-2px);
+    }
+    
+    /* ===== LAYOUT PRINCIPAL ===== */
+    .main-content {
+        max-width: 1400px;
+        margin: 30px auto;
+        padding: 0 30px;
+        display: grid;
+        grid-template-columns: 300px 1fr 300px;
+        gap: 25px;
+    }
+    
+    /* ===== SIDEBAR GAUCHE ===== */
+    .sidebar-left {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .profile-card,
+    .friends-widget,
+    .suggestions-widget,
+    .stats-widget {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: var(--shadow);
+        transition: all 0.3s;
+        border: 1px solid var(--line);
+    }
+    
+    .profile-card:hover,
+    .friends-widget:hover,
+    .suggestions-widget:hover,
+    .stats-widget:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-3px);
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
+        color: #fef7e3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        font-weight: bold;
+        margin: 0 auto 15px;
+        box-shadow: 0 10px 20px rgba(15, 43, 70, 0.25);
+        transition: all 0.3s;
+    }
+    
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        box-shadow: 0 14px 30px rgba(15, 43, 70, 0.3);
+    }
+    
+    .profile-name {
+        text-align: center;
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: var(--ink);
+        font-family: "Playfair Display", "Times New Roman", serif;
+    }
+    
+    .user-type {
+        text-align: center;
+        font-size: 16px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .profile-info,
+    .profile-contact {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--line);
+    }
+    
+    .user-detail {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 8px;
+        line-height: 1.6;
+    }
+    
+    .user-detail strong {
+        color: var(--ink);
+    }
+    
+    .profile-actions {
+        margin-top: 15px;
+    }
+    
+    .btn-edit-profile {
+        display: block;
+        text-align: center;
+        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
+        color: #fef7e3;
+        padding: 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-edit-profile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(15, 43, 70, 0.25);
+    }
+    
+    /* Amis Widget */
+    .friends-widget h3 {
+        font-size: 16px;
+        margin-bottom: 15px;
+        color: var(--ink);
+    }
+    
+    .friends-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .friend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 6px;
+        transition: all 0.3s;
+        margin-bottom: 5px;
+    }
+    
+    .friend-item:hover {
+        background-color: rgba(31, 122, 122, 0.08);
+        transform: translateX(5px);
+    }
+    
+    .friend-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
+        color: #fef7e3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .friend-name {
+        font-size: 14px;
+        color: var(--ink);
+    }
+    
+    .no-friends {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .btn-add-friend {
+        display: block;
+        text-align: center;
+        background-color: var(--accent);
+        color: #fef7e3;
+        padding: 8px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .btn-add-friend:hover {
+        background-color: #175f5f;
+        transform: translateY(-2px);
+    }
+    
+    /* ===== CONTENU CENTRAL ===== */
+    .content-center {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .welcome-message {
+        background: var(--card);
+        padding: 30px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        text-align: center;
+        transition: all 0.3s;
+        border: 1px solid var(--line);
+    }
+    
+    .welcome-message:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-3px);
+    }
+    
+    .welcome-message h1 {
+        font-size: 28px;
+        color: var(--ink);
+        margin-bottom: 10px;
+        font-family: "Playfair Display", "Times New Roman", serif;
+    }
+    
+    .welcome-subtitle {
+        font-size: 16px;
+        color: var(--muted);
+    }
+    
+    .post-form-card {
+        background: var(--card);
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transition: all 0.3s;
+        border: 1px solid var(--line);
+    }
+    
+    .post-form-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+    
+    .post-form-card h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: var(--ink);
+    }
+    
+    /* Erreurs du formulaire */
+    .form-errors {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+        border-left: 4px solid #ef4444;
+        color: #ef4444;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .form-errors p {
+        margin: 5px 0;
+    }
+    
+    .post-textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 15px;
+        resize: vertical;
+        margin-bottom: 10px;
+        font-family: inherit;
+        transition: all 0.3s;
+        background-color: #fbfaf8;
+    }
+    
+    .post-textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(31, 122, 122, 0.12);
+    }
+    
+    .btn-publish {
+        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
+        color: #fef7e3;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-publish:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(15, 43, 70, 0.25);
+    }
+    
+    .btn-publish:active {
+        transform: translateY(0);
+    }
+    
+    /* Messages Feed */
+    .messages-feed {
+        background: var(--card);
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+    }
+    
+    .messages-feed h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: var(--ink);
+    }
+    
+    /* Carte de message */
+    .message-card {
+        border: 1px solid var(--line);
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: var(--radius);
+        background: #ffffff;
+        transition: all 0.3s;
+    }
+    
+    .message-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-3px);
+    }
+    
+    .message-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+    }
+    
+    .message-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
+        color: #fef7e3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        flex-shrink: 0;
+        box-shadow: 0 6px 14px rgba(15, 43, 70, 0.2);
+        transition: all 0.3s;
+    }
+    
+    .message-avatar:hover {
+        transform: scale(1.1);
+        box-shadow: 0 10px 20px rgba(15, 43, 70, 0.3);
+    }
+    
+    .message-author-info {
+        flex: 1;
+    }
+    
+    .message-author-info strong {
+        display: block;
+        font-size: 15px;
+        color: var(--ink);
+        margin-bottom: 3px;
+    }
+    
+    .message-author-info strong a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+    }
+    
+    .message-meta {
+        font-size: 13px;
+        color: var(--muted);
+    }
+    
+    .message-content {
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--ink);
+        margin-bottom: 15px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    
+    .message-actions {
+        display: flex;
+        gap: 10px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+    }
+    
+    .message-action-btn {
+        flex: 1;
+        padding: 8px 12px;
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 14px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .message-action-btn:hover {
+        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
+        color: #fef7e3;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(15, 43, 70, 0.2);
+    }
+    
+    .no-messages {
+        text-align: center;
+        padding: 40px;
+        color: var(--muted);
+    }
+    
+    .no-messages p {
+        margin: 8px 0;
+    }
+    
+    /* ===== SIDEBAR DROITE ===== */
+    .sidebar-right {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .suggestions-widget h3,
+    .stats-widget h3 {
+        font-size: 16px;
+        margin-bottom: 15px;
+        color: var(--ink);
+    }
+    
+    .suggestions-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .suggestions-list li {
+        display: flex;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background-color: #f7f4ee;
+        transition: all 0.3s;
+    }
+    
+    .suggestions-list li:hover {
+        background: linear-gradient(135deg, rgba(31, 122, 122, 0.12) 0%, rgba(240, 199, 94, 0.12) 100%);
+        transform: translateX(5px);
+    }
+    
+    .suggestion-icon {
+        font-size: 24px;
+    }
+    
+    .suggestions-list strong {
+        display: block;
+        font-size: 14px;
+        color: var(--ink);
+        margin-bottom: 3px;
+    }
+    
+    .suggestions-list p {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0;
+    }
+    
+    .stats-widget {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        background-color: #f7f4ee;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    
+    .stat-item:hover {
+        background: linear-gradient(135deg, rgba(31, 122, 122, 0.12) 0%, rgba(240, 199, 94, 0.12) 100%);
+        transform: scale(1.05);
+    }
+    
+    .stat-number {
+        font-size: 32px;
+        font-weight: bold;
+        color: var(--accent);
+    }
+    
+    .stat-label {
+        font-size: 14px;
+        color: var(--muted);
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1200px) {
+        .main-content {
+            grid-template-columns: 1fr;
+        }
+        
+        .sidebar-left,
+        .sidebar-right {
+            display: none;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .navbar-content {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .nav-links {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
