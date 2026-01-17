@@ -1,588 +1,531 @@
-
+{% extends "base.html" %}
 
 {% block contenu %}
 <div class="edit-profile-container">
-    <!-- ========================================
-         HEADER / NAVIGATION
-         ======================================== -->
-    <header class="navbar">
-        <div class="navbar-content">
-            <div class="logo">
-                <span class="logo-icon">📘</span>
-                <span class="logo-text">MonFace</span>
-            </div>
-            
-            <nav class="nav-links">
-                <a href="{% url 'welcome' %}" class="nav-link">
-                    Accueil
-                </a>
-                <a href="{% url 'view_profile' logged_user.id %}" class="nav-link">
-                    Mon Profil
-                </a>
-                <a href="#" class="nav-link">
-                    Amis
-                </a>
-                <a href="#" class="nav-link">
-                    Messages
-                </a>
-            </nav>
-            
-            <div class="user-menu">
-                <span class="user-name">{{ logged_user.prenom }} {{ logged_user.nom }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">
-                    Déconnexion
-                </a>
-            </div>
-        </div>
-    </header>
-    
-    <!-- ========================================
-         CONTENU PRINCIPAL
-         ======================================== -->
-    <div class="main-content">
-        <div class="edit-form-wrapper">
-            <!-- En-tête -->
-            <div class="edit-header">
-                <h1>✏️ Modifier mon profil</h1>
-                <p class="edit-subtitle">
-                    {% if is_student %}
-                        Mettez à jour vos informations personnelles et académiques
-                    {% else %}
-                        Mettez à jour vos informations personnelles et professionnelles
-                    {% endif %}
-                </p>
-            </div>
-            
-            <!-- Formulaire -->
-            <div class="edit-form-card">
-                <!-- Afficher les erreurs globales -->
-                {% if form.non_field_errors %}
-                    <div class="form-errors">
-                        {% for error in form.non_field_errors %}
-                            <p>⚠️ {{ error }}</p>
-                        {% endfor %}
-                    </div>
+    <div class="edit-profile-card">
+        <div class="header">
+            <h1>
+                <span class="title-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z"></path>
+                    </svg>
+                </span>
+                Modifier mon profil
+            </h1>
+            <p class="subtitle">
+                {% if is_student %}
+                    Mettez a jour vos informations personnelles et academiques.
+                {% else %}
+                    Mettez a jour vos informations personnelles et professionnelles.
                 {% endif %}
-                
-                <form action="{% url 'edit_profile' %}" method="post">
-                    {% csrf_token %}
-                    
-                    <!-- Section : Informations personnelles -->
-                    <div class="form-section">
-                        <h3 class="section-title">👤 Informations personnelles</h3>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="id_nom">{{ form.nom.label }}</label>
-                                {{ form.nom }}
-                                {% if form.nom.errors %}
-                                    <div class="field-errors">
-                                        {% for error in form.nom.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="id_prenom">{{ form.prenom.label }}</label>
-                                {{ form.prenom }}
-                                {% if form.prenom.errors %}
-                                    <div class="field-errors">
-                                        {% for error in form.prenom.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
+            </p>
+        </div>
+
+        <div class="form-card">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>Erreur :</strong>
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form action="{% url 'edit_profile' %}" method="post" class="edit-form">
+                {% csrf_token %}
+
+                <div class="form-section">
+                    <h3>
+                        <span class="section-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="4"></circle>
+                                <path d="M4 20c2.5-4 13.5-4 16 0"></path>
+                            </svg>
+                        </span>
+                        Informations personnelles
+                    </h3>
+
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="id_email">{{ form.email.label }}</label>
-                            {{ form.email }}
-                            {% if form.email.errors %}
+                            <label for="id_nom">{{ form.nom.label }}</label>
+                            {{ form.nom }}
+                            {% if form.nom.errors %}
                                 <div class="field-errors">
-                                    {% for error in form.email.errors %}
+                                    {% for error in form.nom.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="id_tlf">{{ form.tlf.label }}</label>
-                                {{ form.tlf }}
-                                {% if form.tlf.errors %}
-                                    <div class="field-errors">
-                                        {% for error in form.tlf.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="id_date_naissance">{{ form.date_naissance.label }}</label>
-                                {{ form.date_naissance }}
-                                {% if form.date_naissance.errors %}
-                                    <div class="field-errors">
-                                        {% for error in form.date_naissance.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+
+                        <div class="form-group">
+                            <label for="id_prenom">{{ form.prenom.label }}</label>
+                            {{ form.prenom }}
+                            {% if form.prenom.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.prenom.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
-                    
-                    <!-- Section : Informations académiques/professionnelles -->
-                    <div class="form-section">
-                        {% if is_student %}
-                            <h3 class="section-title">🎓 Informations académiques</h3>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="id_annee">{{ form.annee.label }}</label>
-                                    {{ form.annee }}
-                                    {% if form.annee.errors %}
-                                        <div class="field-errors">
-                                            {% for error in form.annee.errors %}
-                                                <span>{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="id_cursus">{{ form.cursus.label }}</label>
-                                    {{ form.cursus }}
-                                    {% if form.cursus.errors %}
-                                        <div class="field-errors">
-                                            {% for error in form.cursus.errors %}
-                                                <span>{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="id_faculty">{{ form.faculty.label }}</label>
-                                {{ form.faculty }}
-                                {% if form.faculty.errors %}
-                                    <div class="field-errors">
-                                        {% for error in form.faculty.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <h3 class="section-title">💼 Informations professionnelles</h3>
-                            
-                            <div class="form-group">
-                                <label for="id_job">{{ form.job.label }}</label>
-                                {{ form.job }}
-                                {% if form.job.errors %}
-                                    <div class="field-errors">
-                                        {% for error in form.job.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="id_office">{{ form.office.label }}</label>
-                                    {{ form.office }}
-                                    {% if form.office.errors %}
-                                        <div class="field-errors">
-                                            {% for error in form.office.errors %}
-                                                <span>{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="id_campus">{{ form.campus.label }}</label>
-                                    {{ form.campus }}
-                                    {% if form.campus.errors %}
-                                        <div class="field-errors">
-                                            {% for error in form.campus.errors %}
-                                                <span>{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="id_faculty">{{ form.faculty.label }}</label>
-                                {{ form.faculty }}
-                                {% if form.faculty.errors %}
-                                    <div class="field-errors">
-                                        {% for error in form.faculty.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+
+                    <div class="form-group">
+                        <label for="id_email">{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="field-errors">
+                                {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
                             </div>
                         {% endif %}
                     </div>
-                    
-                    <!-- Section : Changer le mot de passe -->
-                    <div class="form-section">
-                        <h3 class="section-title">🔒 Changer le mot de passe (optionnel)</h3>
-                        
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_tlf">{{ form.tlf.label }}</label>
+                            {{ form.tlf }}
+                            {% if form.tlf.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.tlf.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_date_naissance">{{ form.date_naissance.label }}</label>
+                            {{ form.date_naissance }}
+                            {% if form.date_naissance.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.date_naissance.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    {% if is_student %}
+                        <h3>
+                            <span class="section-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 8l10-5 10 5-10 5-10-5z"></path>
+                                    <path d="M6 12v5c0 1 6 3 6 3s6-2 6-3v-5"></path>
+                                </svg>
+                            </span>
+                            Informations academiques
+                        </h3>
+
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="id_new_password">{{ form.new_password.label }}</label>
-                                {{ form.new_password }}
-                                {% if form.new_password.errors %}
+                                <label for="id_annee">{{ form.annee.label }}</label>
+                                {{ form.annee }}
+                                {% if form.annee.errors %}
                                     <div class="field-errors">
-                                        {% for error in form.new_password.errors %}
+                                        {% for error in form.annee.errors %}
                                             <span>{{ error }}</span>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
                             </div>
-                            
+
                             <div class="form-group">
-                                <label for="id_confirm_password">{{ form.confirm_password.label }}</label>
-                                {{ form.confirm_password }}
-                                {% if form.confirm_password.errors %}
+                                <label for="id_cursus">{{ form.cursus.label }}</label>
+                                {{ form.cursus }}
+                                {% if form.cursus.errors %}
                                     <div class="field-errors">
-                                        {% for error in form.confirm_password.errors %}
+                                        {% for error in form.cursus.errors %}
                                             <span>{{ error }}</span>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
-                        
-                        <p class="help-text">
-                            💡 Laissez ces champs vides si vous ne souhaitez pas modifier votre mot de passe.
-                        </p>
+
+                        <div class="form-group">
+                            <label for="id_faculty">{{ form.faculty.label }}</label>
+                            {{ form.faculty }}
+                            {% if form.faculty.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.faculty.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <h3>
+                            <span class="section-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 7h18"></path>
+                                    <path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path>
+                                    <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                                </svg>
+                            </span>
+                            Informations professionnelles
+                        </h3>
+
+                        <div class="form-group">
+                            <label for="id_job">{{ form.job.label }}</label>
+                            {{ form.job }}
+                            {% if form.job.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.job.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_office">{{ form.office.label }}</label>
+                                {{ form.office }}
+                                {% if form.office.errors %}
+                                    <div class="field-errors">
+                                        {% for error in form.office.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_campus">{{ form.campus.label }}</label>
+                                {{ form.campus }}
+                                {% if form.campus.errors %}
+                                    <div class="field-errors">
+                                        {% for error in form.campus.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_faculty">{{ form.faculty.label }}</label>
+                            {{ form.faculty }}
+                            {% if form.faculty.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.faculty.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-section">
+                    <h3>
+                        <span class="section-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 17v-2"></path>
+                                <rect x="5" y="11" width="14" height="9" rx="2"></rect>
+                                <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                            </svg>
+                        </span>
+                        Changer le mot de passe (optionnel)
+                    </h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_new_password">{{ form.new_password.label }}</label>
+                            {{ form.new_password }}
+                            {% if form.new_password.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.new_password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_confirm_password">{{ form.confirm_password.label }}</label>
+                            {{ form.confirm_password }}
+                            {% if form.confirm_password.errors %}
+                                <div class="field-errors">
+                                    {% for error in form.confirm_password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    
-                    <!-- Boutons d'action -->
-                    <div class="form-actions">
-                        <a href="{% url 'view_profile' logged_user.id %}" class="btn btn-secondary">
-                            ❌ Annuler
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            ✅ Enregistrer les modifications
-                        </button>
-                    </div>
-                </form>
-            </div>
+
+                    <p class="help-text">
+                        Laissez ces champs vides si vous ne souhaitez pas modifier votre mot de passe.
+                    </p>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'view_profile' logged_user.id %}" class="btn btn-secondary">
+                        <span class="btn-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 18L18 6"></path>
+                                <path d="M6 6l12 12"></path>
+                            </svg>
+                        </span>
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+                                <path d="M17 21v-8H7v8"></path>
+                                <path d="M7 3v5h8"></path>
+                            </svg>
+                        </span>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- ========================================
-     STYLES CSS
-     ======================================== -->
 <style>
     #editProfilePage {
-        background-color: #f0f2f5;
+        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%),
+                    radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%),
+                    linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
         min-height: 100vh;
-        padding: 0;
-        margin: 0;
+        padding: 40px 20px;
     }
-    
+
     .edit-profile-container {
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-    
-    /* ===== NAVBAR (même style que les autres pages) ===== */
-    .navbar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        padding: 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-    
-    .navbar-content {
-        max-width: 1400px;
+        max-width: 760px;
         margin: 0 auto;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
-    
-    .logo {
-        display: flex;
+
+    .edit-profile-card {
+        background: rgba(12, 22, 36, 0.92);
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgba(2, 8, 14, 0.55);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e6f1f3;
+    }
+
+    .header {
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.2), rgba(24, 56, 88, 0.65));
+        color: #e6f1f3;
+        padding: 36px 30px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .header h1 {
+        font-size: 28px;
+        margin: 0 0 10px 0;
+        border: none;
+        padding: 0;
+        color: #e6f1f3;
+        display: inline-flex;
         align-items: center;
         gap: 10px;
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
+        letter-spacing: 0.4px;
     }
-    
-    .logo-icon {
-        font-size: 32px;
-    }
-    
-    .nav-links {
-        display: flex;
-        gap: 30px;
-    }
-    
-    .nav-link {
-        color: white;
-        text-decoration: none;
-        padding: 8px 15px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        font-weight: 500;
-    }
-    
-    .nav-link:hover {
-        background-color: rgba(255,255,255,0.2);
-        transform: translateY(-2px);
-    }
-    
-    .user-menu {
-        display: flex;
+
+    .title-icon,
+    .section-icon,
+    .btn-icon {
+        display: inline-flex;
         align-items: center;
-        gap: 15px;
-        color: white;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
     }
-    
-    .user-name {
-        font-weight: 600;
+
+    .title-icon svg,
+    .section-icon svg,
+    .btn-icon svg {
+        width: 100%;
+        height: 100%;
     }
-    
-    .btn-logout {
-        background-color: rgba(255,255,255,0.2);
-        color: white;
-        padding: 8px 15px;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.3s;
-        font-weight: 500;
+
+    .subtitle {
+        font-size: 15px;
+        opacity: 0.85;
+        margin: 0;
+        color: rgba(230, 241, 243, 0.75);
     }
-    
-    .btn-logout:hover {
-        background-color: rgba(255,255,255,0.3);
-        transform: translateY(-2px);
+
+    .form-card {
+        padding: 30px;
+        max-width: 700px;
+        margin: 0 auto;
     }
-    
-    /* ===== CONTENU PRINCIPAL ===== */
-    .main-content {
-        max-width: 900px;
-        margin: 30px auto;
-        padding: 0 30px;
+
+    .edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
     }
-    
-    .edit-form-wrapper {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-    
-    /* En-tête */
-    .edit-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 40px;
-        text-align: center;
-        color: white;
-    }
-    
-    .edit-header h1 {
-        font-size: 32px;
-        margin-bottom: 10px;
-        color: white;
-    }
-    
-    .edit-subtitle {
-        font-size: 16px;
-        opacity: 0.9;
-    }
-    
-    /* Formulaire */
-    .edit-form-card {
-        padding: 40px;
-    }
-    
-    /* Erreurs globales */
-    .form-errors {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
-        border-left: 4px solid #ef4444;
-        color: #ef4444;
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    
-    .form-errors p {
-        margin: 5px 0;
-    }
-    
-    /* Sections du formulaire */
+
     .form-section {
-        margin-bottom: 30px;
-        padding-bottom: 30px;
-        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
-    
+
     .form-section:last-of-type {
         border-bottom: none;
     }
-    
-    .section-title {
-        font-size: 20px;
-        color: #333;
-        margin-bottom: 20px;
+
+    .form-section h3 {
+        font-size: 16px;
+        color: #e6f1f3;
+        margin-bottom: 16px;
         font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
-    
-    /* Groupes de champs */
+
     .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
-        margin-bottom: 20px;
     }
-    
+
     .form-group {
         display: flex;
         flex-direction: column;
         gap: 8px;
+        margin-bottom: 14px;
     }
-    
+
     .form-group label {
         font-size: 14px;
         font-weight: 600;
-        color: #333;
+        color: #e6f1f3;
     }
-    
-    /* Champs de formulaire */
-    .form-control {
+
+    .form-group input,
+    .form-group select {
         width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 15px;
-        font-family: inherit;
+        max-width: 320px;
+        padding: 12px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 10px;
+        font-size: 14px;
+        background: rgba(9, 16, 26, 0.6);
+        color: #e6f1f3;
         transition: all 0.3s;
     }
-    
-    .form-control:focus {
+
+    .form-group input:focus,
+    .form-group select:focus {
         outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        border-color: rgba(50, 199, 194, 0.6);
+        box-shadow: 0 0 0 3px rgba(50, 199, 194, 0.18);
     }
-    
-    select.form-control {
-        cursor: pointer;
-    }
-    
-    /* Erreurs de champs */
+
     .field-errors {
-        color: #ef4444;
-        font-size: 13px;
+        color: #ffb4b4;
+        font-size: 12px;
         font-weight: 500;
     }
-    
+
     .field-errors span {
         display: block;
         margin-top: 4px;
     }
-    
-    /* Texte d'aide */
+
     .help-text {
-        font-size: 14px;
-        color: #666;
+        font-size: 13px;
+        color: rgba(230, 241, 243, 0.6);
         margin-top: 10px;
         padding: 12px;
-        background: #f8f9fa;
-        border-radius: 6px;
-        border-left: 3px solid #667eea;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 8px;
+        border-left: 3px solid rgba(50, 199, 194, 0.6);
     }
-    
-    /* Boutons d'action */
+
+    .alert {
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #ffd3d3;
+    }
+
     .form-actions {
         display: flex;
-        gap: 15px;
+        gap: 14px;
         justify-content: flex-end;
-        margin-top: 30px;
-        padding-top: 30px;
-        border-top: 2px solid #f0f0f0;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
     }
-    
+
     .btn {
-        padding: 12px 30px;
-        border: none;
-        border-radius: 8px;
-        font-size: 15px;
+        padding: 12px 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        font-size: 14px;
         font-weight: 600;
+        text-decoration: none;
         cursor: pointer;
         transition: all 0.3s;
-        text-decoration: none;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #e6f1f3;
+        background: rgba(255, 255, 255, 0.04);
     }
-    
+
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
+        border-color: rgba(50, 199, 194, 0.5);
+        color: #f7fbfb;
     }
-    
+
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 12px 24px rgba(2, 8, 14, 0.45);
     }
-    
+
     .btn-secondary {
-        background: white;
-        color: #667eea;
-        border: 2px solid #667eea;
+        border-color: rgba(121, 167, 227, 0.6);
+        color: #e6f1f3;
     }
-    
+
     .btn-secondary:hover {
-        background: #667eea;
-        color: white;
+        background: rgba(121, 167, 227, 0.2);
         transform: translateY(-2px);
     }
-    
-    /* ===== RESPONSIVE ===== */
+
     @media (max-width: 768px) {
-        .navbar-content {
-            flex-direction: column;
-            gap: 15px;
+        #editProfilePage {
+            padding: 20px 10px;
         }
-        
-        .nav-links {
-            flex-wrap: wrap;
-            justify-content: center;
+
+        .form-card {
+            padding: 20px;
         }
-        
+
         .form-row {
             grid-template-columns: 1fr;
         }
-        
-        .edit-form-card {
-            padding: 20px;
-        }
-        
+
         .form-actions {
             flex-direction: column;
         }
-        
+
         .btn {
             width: 100%;
+            justify-content: center;
         }
     }
 </style>
