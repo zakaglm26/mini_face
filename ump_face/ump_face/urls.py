@@ -43,12 +43,12 @@ urlpatterns = [
     # Ajouter des amis (protégée)
     path('friends/add/<int:user_id>/', views.add_friend, name='add_friend'),  
 
-    # Supprimer des amis (protégée)
-    path('friends/remove/<int:user_id>/', views.remove_friend, name='remove_friend'),  
-    
     # Recherche d'utilisateurs (protégée)
     path('search/', views.search_users, name='search_users'),  
-
+    
+    # Ajouter des amis via AJAX (protégée)
+    path('friends/add-ajax/<int:user_id>/', views.add_friend_ajax, name='add_friend_ajax'),
+    
     # Déconnexion
     path('logout/', views.logout, name='logout'),
 

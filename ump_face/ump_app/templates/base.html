@@ -6,19 +6,19 @@
     <title>UMP-Face</title>
     <style>
         :root {
-            --nav-bg: rgba(10, 16, 22, 0.92);
-            --nav-line: rgba(255, 255, 255, 0.15);
-            --nav-ink: #e7f5f7;
-            --nav-muted: rgba(231, 245, 247, 0.75);
-            --nav-accent: #32c7c2;
-            --nav-accent-2: #f0c75e;
+            --nav-bg: rgba(7, 16, 28, 0.94);
+            --nav-line: rgba(148, 189, 220, 0.22);
+            --nav-ink: #e9f2fb;
+            --nav-muted: rgba(233, 242, 251, 0.7);
+            --nav-accent: #2b6f9f;
+            --nav-accent-2: #7db3d6;
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: #0f1b24;
+            background: #0a1422;
             color: var(--nav-ink);
         }
 
@@ -39,6 +39,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 14px;
+            position: relative;
         }
 
         .nav-link,
@@ -57,18 +58,18 @@
 
         .nav-link:hover,
         .nav-button:hover {
-            background: rgba(50, 199, 194, 0.16);
-            border-color: rgba(50, 199, 194, 0.4);
+            background: rgba(43, 111, 159, 0.2);
+            border-color: rgba(43, 111, 159, 0.45);
         }
 
         .nav-button {
-            background: linear-gradient(135deg, rgba(50, 199, 194, 0.85), rgba(24, 56, 88, 0.95));
-            border-color: rgba(50, 199, 194, 0.4);
+            background: linear-gradient(135deg, rgba(43, 111, 159, 0.95), rgba(9, 21, 37, 0.98));
+            border-color: rgba(43, 111, 159, 0.5);
             color: #f7fbfb;
         }
 
         .nav-button:hover {
-            background: linear-gradient(135deg, rgba(50, 199, 194, 0.95), rgba(24, 56, 88, 1));
+            background: linear-gradient(135deg, rgba(57, 135, 186, 1), rgba(9, 21, 37, 1));
         }
 
         .nav-icon {
@@ -77,6 +78,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .nav-icon svg {
+            stroke: var(--nav-accent-2);
+        }
+
+        .nav-link:hover .nav-icon svg {
+            stroke: var(--nav-accent);
+        }
+
+        .nav-button .nav-icon svg {
+            stroke: #f7fbfb;
         }
 
         .nav-logo {
@@ -93,8 +106,8 @@
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            border: 1px solid rgba(240, 199, 94, 0.6);
-            box-shadow: 0 0 10px rgba(240, 199, 94, 0.4);
+            border: 1px solid rgba(125, 179, 214, 0.6);
+            box-shadow: 0 0 10px rgba(125, 179, 214, 0.45);
         }
 
         .nav-logo span {
@@ -104,7 +117,14 @@
         .nav-center {
             display: flex;
             justify-content: center;
-            flex: 1;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-search {
+            min-width: 240px;
+            justify-content: center;
         }
 
         .nav-right {
@@ -132,6 +152,8 @@
                 order: 2;
                 width: 100%;
                 justify-content: center;
+                position: static;
+                transform: none;
             }
 
             .nav-right {
@@ -146,11 +168,11 @@
     <nav class="top-nav">
         <div class="nav-inner">
             <a class="nav-logo" href="{% url 'welcome' %}">
-                <img alt="MonFace logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%2332c7c2'/><stop offset='1' stop-color='%23163852'/></linearGradient></defs><rect width='80' height='80' rx='24' fill='url(%23g)'/><circle cx='40' cy='34' r='14' fill='%23f7fbfb'/><path d='M18 66c6-12 38-12 44 0' fill='%23f0c75e'/></svg>">
+                <img alt="MonFace logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%232b6f9f'/><stop offset='1' stop-color='%23091325'/></linearGradient></defs><rect width='80' height='80' rx='24' fill='url(%23g)'/><circle cx='40' cy='34' r='14' fill='%23f7fbfb'/><path d='M18 66c6-12 38-12 44 0' fill='%237db3d6'/></svg>">
                 <span>UMP Face</span>
             </a>
             <div class="nav-center">
-                <a class="nav-button" href="{% url 'search_users' %}" aria-label="Rechercher un ami">
+                <a class="nav-button nav-search" href="{% url 'search_users' %}" aria-label="Rechercher un ami">
                     <span class="nav-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="7"></circle>

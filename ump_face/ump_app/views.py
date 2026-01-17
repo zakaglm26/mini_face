@@ -385,41 +385,10 @@ def add_friend(request, user_id):
     return redirect('/profile/' + str(user_id) + '/')
 
 
-def remove_friend(request, user_id):
-    """
-    Retirer un ami
-    """
-    
-    # 1. Récupérer l'utilisateur connecté
-    logged_user = get_logged_user_from_request(request)
-    
-    if not logged_user:
-        return redirect('/login/')
-    
-    # 2. Récupérer l'ami à retirer
-    friend_to_remove = None
-    
-    if Student.objects.filter(id=user_id).exists():
-        friend_to_remove = Student.objects.get(id=user_id)
-    elif Employee.objects.filter(id=user_id).exists():
-        friend_to_remove = Employee.objects.get(id=user_id)
-    else:
-        return redirect('/welcome/')
-    
-    # 3. Vérifier qu'ils sont bien amis
-    if friend_to_remove in logged_user.amis.all():
-        # Retirer l'ami dans les deux sens
-        logged_user.amis.remove(friend_to_remove)
-        friend_to_remove.amis.remove(logged_user)
-    
-    # 4. Rediriger vers le profil
-    return redirect('/profile/' + str(user_id) + '/')
-
 
 def search_users(request):
     """
-    Rechercher des utilisateurs - VERSION AMÉLIORÉE
-    Permet de rechercher par nom, prénom, email OU "prénom nom"
+    Rechercher des utilisateurs
     """
     from django.db.models import Q
     
@@ -431,69 +400,122 @@ def search_users(request):
     
     # 2. Récupérer le terme de recherche
     search_query = request.GET.get('q', '').strip()
-    
     results = []
     
     if search_query:
-        # Séparer les mots de la recherche
-        words = search_query.split()
+        # Récupérer TOUS les utilisateurs (sauf soi-même)
+        all_students = Student.objects.exclude(id=logged_user.id)
+        all_employees = Employee.objects.exclude(id=logged_user.id)
+        all_users = list(all_students) + list(all_employees)
         
-        # Créer les requêtes de recherche
-        student_query = Q()
-        employee_query = Q()
+        # Filtrer manuellement pour plus de flexibilité
+        search_lower = search_query.lower()
         
-        for word in words:
-            # Pour chaque mot, chercher dans nom OU prénom OU email
-            student_query |= (
-                Q(nom__icontains=word) | 
-                Q(prenom__icontains=word) | 
-                Q(email__icontains=word)
-            )
-            employee_query |= (
-                Q(nom__icontains=word) | 
-                Q(prenom__icontains=word) | 
-                Q(email__icontains=word)
-            )
-        
-        # Rechercher dans Students
-        students = Student.objects.filter(student_query).distinct()
-        
-        # Rechercher dans Employees
-        employees = Employee.objects.filter(employee_query).distinct()
-        
-        # Combiner les résultats
-        results = list(students) + list(employees)
-        
-        # Retirer l'utilisateur connecté des résultats
-        results = [user for user in results if user.id != logged_user.id]
-        
-        # Si la recherche contient plusieurs mots, filtrer pour ne garder que ceux qui contiennent TOUS les mots
-        if len(words) > 1:
-            filtered_results = []
-            for user in results:
-                full_name = f"{user.prenom} {user.nom}".lower()
-                email = user.email.lower()
-                
-                # Vérifier que TOUS les mots sont présents
-                all_words_found = all(
-                    word.lower() in full_name or word.lower() in email 
-                    for word in words
-                )
-                
-                if all_words_found:
-                    filtered_results.append(user)
+        for user in all_users:
+            # Créer une chaîne avec toutes les infos
+            searchable_text = f"{user.prenom} {user.nom} {user.nom} {user.prenom} {user.email}".lower()
             
-            results = filtered_results
+            # Vérifier si tous les mots de la recherche sont présents
+            if all(word.lower() in searchable_text for word in search_query.split()):
+                results.append(user)
         
         # Limiter à 20 résultats
         results = results[:20]
     
-    # 3. Afficher le template
+    # 3. IMPORTANT : Récupérer la liste des IDs des amis
+    friend_ids = list(logged_user.amis.values_list('id', flat=True))
+    
+    print(f"DEBUG: logged_user = {logged_user.prenom} (ID {logged_user.id})")
+    print(f"DEBUG: friend_ids = {friend_ids}")
+    print(f"DEBUG: Résultats = {[(r.id, r.prenom, r.nom) for r in results]}")
+    
+    # 4. Afficher le template
     return render(request, 'search_users.html', {
         'logged_user': logged_user,
         'search_query': search_query,
         'results': results,
+        'friend_ids': friend_ids,  # ← CRUCIAL
     })
+
+from django.http import JsonResponse
+
+def add_friend_ajax(request, user_id):
+    """
+    Ajouter un ami via AJAX (sans redirection)
+    """
+    print("=" * 50)
+    print("DEBUG ADD_FRIEND_AJAX")
+    print(f"Méthode: {request.method}")
+    print(f"User ID à ajouter: {user_id}")
+    
+    if request.method != 'POST':
+        print(" Erreur: Méthode non POST")
+        return JsonResponse({'success': False, 'error': 'Méthode non autorisée'})
+    
+    # Récupérer l'utilisateur connecté
+    logged_user = get_logged_user_from_request(request)
+    
+    print(f"Utilisateur connecté: {logged_user}")
+    
+    if not logged_user:
+        print(" Erreur: Pas d'utilisateur connecté")
+        return JsonResponse({'success': False, 'error': 'Non connecté'})
+    
+    # Récupérer l'utilisateur à ajouter
+    friend_to_add = None
+    
+    try:
+        if Student.objects.filter(id=user_id).exists():
+            friend_to_add = Student.objects.get(id=user_id)
+            print(f" Trouvé Student: {friend_to_add.prenom} {friend_to_add.nom}")
+        elif Employee.objects.filter(id=user_id).exists():
+            friend_to_add = Employee.objects.get(id=user_id)
+            print(f" Trouvé Employee: {friend_to_add.prenom} {friend_to_add.nom}")
+        else:
+            print(" Erreur: Utilisateur introuvable")
+            return JsonResponse({'success': False, 'error': 'Utilisateur introuvable'})
+    except Exception as e:
+        print(f" Exception lors de la recherche: {e}")
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+    # Vérifier qu'on n'ajoute pas soi-même
+    if logged_user.id == friend_to_add.id:
+        print(" Erreur: Tentative d'ajout de soi-même")
+        return JsonResponse({'success': False, 'error': 'Vous ne pouvez pas vous ajouter vous-même'})
+    
+    # Vérifier qu'ils ne sont pas déjà amis
+    if friend_to_add in logged_user.amis.all():
+        print(" Déjà amis")
+        return JsonResponse({'success': False, 'error': 'Déjà ami'})
+    
+    # Ajouter l'ami dans les deux sens
+    try:
+        print(f" Ajout de {friend_to_add.prenom} dans les amis de {logged_user.prenom}...")
+        logged_user.amis.add(friend_to_add)
+        
+        print(f" Ajout de {logged_user.prenom} dans les amis de {friend_to_add.prenom}...")
+        friend_to_add.amis.add(logged_user)
+        
+        # IMPORTANT: Sauvegarder explicitement
+        logged_user.save()
+        friend_to_add.save()
+        
+        print(" Amis ajoutés avec succès")
+        
+        # Vérifier que ça a bien marché
+        print(f"Vérification: {logged_user.prenom} a {logged_user.amis.count()} amis")
+        print(f"Vérification: {friend_to_add.prenom} a {friend_to_add.amis.count()} amis")
+        
+        print("=" * 50)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{friend_to_add.prenom} {friend_to_add.nom} a été ajouté à vos amis'
+        })
+    except Exception as e:
+        print(f" Exception lors de l'ajout: {e}")
+        print("=" * 50)
+        return JsonResponse({'success': False, 'error': f'Erreur lors de l\'ajout: {str(e)}'})
 # ===============================
 # DÉCONNEXION
 # ===============================
