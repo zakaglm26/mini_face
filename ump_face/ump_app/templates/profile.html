@@ -1,44 +1,8 @@
+{% extends "base.html" %}
 
-
-{% block title %}Profil de {{ profile_user.prenom }} {{ profile_user.nom }} - Mon Face{% endblock %}
-
-{% block bodyId %}profilePage{% endblock %}
 
 {% block contenu %}
 <div class="profile-container">
-    <!-- ========================================
-         HEADER / NAVIGATION
-         ======================================== -->
-    <header class="navbar">
-        <div class="navbar-content">
-            <div class="logo">
-                <span class="logo-icon">📘</span>
-                <span class="logo-text">MonFace</span>
-            </div>
-            
-            <nav class="nav-links">
-                <a href="{% url 'welcome' %}" class="nav-link">
-                    Accueil
-                </a>
-                <a href="{% url 'view_profile' logged_user.id %}" class="nav-link">
-                    Mon Profil
-                </a>
-                <a href="#" class="nav-link">
-                    Amis
-                </a>
-                <a href="#" class="nav-link">
-                    Messages
-                </a>
-            </nav>
-            
-            <div class="user-menu">
-                <span class="user-name">{{ logged_user.prenom }} {{ logged_user.nom }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">
-                    Déconnexion
-                </a>
-            </div>
-        </div>
-    </header>
     
     <!-- ========================================
          CONTENU PRINCIPAL
@@ -62,9 +26,9 @@
                 
                 <!-- Type d'utilisateur -->
                 {% if profile_user.annee %}
-                    <p class="profile-type">🎓 Étudiant</p>
+                    <p class="profile-type">Étudiant</p>
                 {% else %}
-                    <p class="profile-type">💼 Employé</p>
+                    <p class="profile-type">Employé</p>
                 {% endif %}
                 
                 <!-- Boutons d'action -->
@@ -72,42 +36,42 @@
                 {% if is_own_profile %}
                     <!-- C'est mon profil -->
                     <a href="{% url 'edit_profile' %}" class="btn btn-primary">
-                        ✏️ Modifier mon profil
+                        Modifier mon profil
                     </a>
                 {% else %}
                     <!-- C'est le profil de quelqu'un d'autre -->
                     {% if is_friend %}
                         <!-- MODIFIÉ : Boutons avec liens fonctionnels -->
                         <button class="btn btn-success" disabled>
-                            ✅ Vous êtes amis
+                            Vous êtes amis
                         </button>
                         <a href="{% url 'remove_friend' profile_user.id %}" 
                         class="btn btn-danger"
                         onclick="return confirm('Êtes-vous sûr de vouloir retirer {{ profile_user.prenom }} de vos amis ?');">
-                            ❌ Retirer des amis
+                            Retirer des amis
                         </a>
                     {% else %}
                         <!-- MODIFIÉ : Bouton ajouter avec lien fonctionnel -->
                         <a href="{% url 'add_friend' profile_user.id %}" class="btn btn-primary">
-                            ➕ Ajouter comme ami
+                            Ajouter comme ami
                         </a>
                     {% endif %}
                     
                     <button class="btn btn-outline">
-                        💬 Envoyer un message
+                         Envoyer un message
                     </button>
                 {% endif %}
             </div>
             
             <!-- Informations détaillées -->
             <div class="profile-info-card">
-                <h3>📋 Informations</h3>
+                <h3>Informations</h3>
                 
                 <div class="info-list">
                     {% if profile_user.annee %}
                         <!-- Étudiant -->
                         <div class="info-item">
-                            <span class="info-icon">🎓</span>
+                            <span class="info-icon"></span>
                             <div class="info-content">
                                 <strong>Année</strong>
                                 <p>{{ profile_user.annee }}</p>
@@ -115,7 +79,7 @@
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-icon">📚</span>
+                            <span class="info-icon"></span>
                             <div class="info-content">
                                 <strong>Cursus</strong>
                                 <p>{{ profile_user.cursus.titre }}</p>
@@ -124,7 +88,7 @@
                     {% else %}
                         <!-- Employé -->
                         <div class="info-item">
-                            <span class="info-icon">💼</span>
+                            <span class="info-icon"></span>
                             <div class="info-content">
                                 <strong>Poste</strong>
                                 <p>{{ profile_user.job.titre }}</p>
@@ -132,7 +96,7 @@
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-icon">🏢</span>
+                            <span class="info-icon"></span>
                             <div class="info-content">
                                 <strong>Bureau</strong>
                                 <p>{{ profile_user.office }}</p>
@@ -140,7 +104,7 @@
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-icon">🏫</span>
+                            <span class="info-icon"></span>
                             <div class="info-content">
                                 <strong>Campus</strong>
                                 <p>{{ profile_user.campus.nom }}</p>
@@ -149,7 +113,7 @@
                     {% endif %}
                     
                     <div class="info-item">
-                        <span class="info-icon">🏛️</span>
+                        <span class="info-icon"></span>
                         <div class="info-content">
                             <strong>Faculté</strong>
                             <p>{{ profile_user.faculty.nom }}</p>
@@ -159,7 +123,7 @@
                     <!-- Email et téléphone (seulement si c'est mon profil ou un ami) -->
                     {% if is_own_profile or is_friend %}
                         <div class="info-item">
-                            <span class="info-icon">📧</span>
+                            <span class="info-icon"></span>
                             <div class="info-content">
                                 <strong>Email</strong>
                                 <p>{{ profile_user.email }}</p>
@@ -167,7 +131,7 @@
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-icon">📱</span>
+                            <span class="info-icon"></span>
                             <div class="info-content">
                                 <strong>Téléphone</strong>
                                 <p>{{ profile_user.tlf }}</p>
@@ -179,7 +143,7 @@
             
             <!-- Statistiques -->
             <div class="profile-stats-card">
-                <h3>📊 Statistiques</h3>
+                <h3>Statistiques</h3>
                 
                 <div class="stats-grid">
                     <div class="stat-box">
@@ -198,7 +162,7 @@
         <!-- Colonne centrale : Messages de l'utilisateur -->
         <main class="content-center">
             <div class="messages-section">
-                <h3>📝 Messages de {{ profile_user.prenom }}</h3>
+                <h3>Messages de {{ profile_user.prenom }}</h3>
                 
                 {% if user_messages %}
                     {% for message in user_messages %}
@@ -221,20 +185,20 @@
                             
                             <div class="message-actions">
                                 <button class="message-action-btn">
-                                    ❤️ J'aime
+                                     J'aime
                                 </button>
                                 <button class="message-action-btn">
-                                    💬 Commenter
+                                    Commenter
                                 </button>
                                 <button class="message-action-btn">
-                                    🔗 Partager
+                                    Partager
                                 </button>
                             </div>
                         </div>
                     {% endfor %}
                 {% else %}
                     <div class="no-messages">
-                        <p>😊 {{ profile_user.prenom }} n'a pas encore publié de message.</p>
+                        <p>{{ profile_user.prenom }} n'a pas encore publié de message.</p>
                     </div>
                 {% endif %}
             </div>
@@ -270,7 +234,7 @@
             <!-- Amis en commun (si ce n'est pas mon profil) -->
             {% if not is_own_profile %}
                 <div class="mutual-friends-card">
-                    <h3>👫 Amis en commun</h3>
+                    <h3>Amis en commun</h3>
                     
                     {% with mutual_friends=logged_user.amis.all|slice:":5" %}
                         {% if mutual_friends %}
@@ -315,82 +279,7 @@
         padding: 0;
     }
     
-    /* ===== NAVBAR (même style que welcome) ===== */
-    .navbar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        padding: 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
     
-    .navbar-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-    }
-    
-    .logo-icon {
-        font-size: 32px;
-    }
-    
-    .nav-links {
-        display: flex;
-        gap: 30px;
-    }
-    
-    .nav-link {
-        color: white;
-        text-decoration: none;
-        padding: 8px 15px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        font-weight: 500;
-    }
-    
-    .nav-link:hover {
-        background-color: rgba(255,255,255,0.2);
-        transform: translateY(-2px);
-    }
-    
-    .user-menu {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: white;
-    }
-    
-    .user-name {
-        font-weight: 600;
-    }
-    
-    .btn-logout {
-        background-color: rgba(255,255,255,0.2);
-        color: white;
-        padding: 8px 15px;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.3s;
-        font-weight: 500;
-    }
-    
-    .btn-logout:hover {
-        background-color: rgba(255,255,255,0.3);
-        transform: translateY(-2px);
-    }
     
     /* ===== LAYOUT PRINCIPAL ===== */
     .main-content {
@@ -847,6 +736,182 @@
         .friends-grid {
             grid-template-columns: 1fr;
         }
+    }
+</style>
+<style>
+    :root {
+        --glass: rgba(255, 255, 255, 0.08);
+        --glass-strong: rgba(255, 255, 255, 0.14);
+        --line: rgba(255, 255, 255, 0.16);
+        --ink: #e6f1f3;
+        --muted: rgba(230, 241, 243, 0.7);
+        --accent: #32c7c2;
+        --accent-2: #f0c75e;
+        --shadow: 0 24px 60px rgba(5, 12, 18, 0.45);
+        --glow: 0 0 20px rgba(50, 199, 194, 0.35);
+        --radius: 18px;
+    }
+
+    .navbar {
+        display: none;
+    }
+
+    .main-content {
+        margin: 40px auto 60px;
+        gap: 26px;
+    }
+
+    .profile-header-card,
+    .profile-info-card,
+    .profile-stats-card,
+    .friends-section-card,
+    .mutual-friends-card,
+    .messages-section {
+        background: var(--glass);
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+    }
+
+    .profile-cover {
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.35), rgba(24, 56, 88, 0.8));
+    }
+
+    .profile-avatar-large,
+    .message-avatar,
+    .friend-avatar-small,
+    .mutual-friend-avatar {
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
+        color: #f7fbfb;
+        box-shadow: 0 6px 16px rgba(50, 199, 194, 0.35);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-name-large,
+    .messages-section h3,
+    .profile-info-card h3,
+    .profile-stats-card h3,
+    .friends-section-card h3,
+    .mutual-friends-card h3 {
+        color: var(--ink);
+    }
+
+    .info-content p,
+    .message-content,
+    .friend-name-small,
+    .mutual-friend-item a,
+    .user-actions-result {
+        color: var(--ink);
+    }
+
+    .profile-type,
+    .info-content strong,
+    .message-meta,
+    .stat-label,
+    .user-name,
+    .no-messages,
+    .no-friends-text,
+    .no-mutual-text {
+        color: var(--muted);
+    }
+
+    .info-item,
+    .friend-card,
+    .mutual-friend-item,
+    .stat-box {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .info-item:hover,
+    .friend-card:hover,
+    .mutual-friend-item:hover {
+        background: rgba(50, 199, 194, 0.14);
+        border-color: rgba(50, 199, 194, 0.4);
+        box-shadow: var(--glow);
+    }
+
+    .stat-box:hover {
+        background: rgba(240, 199, 94, 0.18);
+        border-color: rgba(240, 199, 94, 0.4);
+    }
+
+    .stat-number {
+        color: #f7e6b2;
+        text-shadow: 0 0 12px rgba(240, 199, 94, 0.5);
+    }
+
+    .message-card {
+        background: rgba(10, 18, 24, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        backdrop-filter: blur(12px);
+    }
+
+    .message-card:hover {
+        border-color: rgba(50, 199, 194, 0.4);
+        box-shadow: 0 18px 40px rgba(5, 12, 18, 0.45);
+    }
+
+    .message-action-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: var(--muted);
+    }
+
+    .message-action-btn:hover {
+        background: rgba(50, 199, 194, 0.18);
+        border-color: rgba(50, 199, 194, 0.4);
+        box-shadow: var(--glow);
+        color: #e9fbfb;
+    }
+
+    .btn,
+    .btn-primary,
+    .btn-success,
+    .btn-danger,
+    .btn-outline {
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
+        border-color: rgba(50, 199, 194, 0.4);
+    }
+
+    .btn-primary:hover {
+        box-shadow: var(--glow);
+    }
+
+    .btn-success {
+        background: rgba(16, 185, 129, 0.2);
+        border-color: rgba(16, 185, 129, 0.4);
+        color: #c7f9e4;
+    }
+
+    .btn-danger {
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #ffd1d1;
+    }
+
+    .btn-outline {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--ink);
+        border-color: rgba(50, 199, 194, 0.4);
+    }
+
+    .btn-outline:hover {
+        background: rgba(50, 199, 194, 0.16);
+        box-shadow: var(--glow);
+        color: #e9fbfb;
+    }
+
+    .messages-section {
+        border: 1px solid var(--line);
     }
 </style>
 {% endblock %}

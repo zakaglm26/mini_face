@@ -1,60 +1,68 @@
 
-{% block title %}Inscription - Mon Face{% endblock %}
-
-{% block bodyId %}registerPage{% endblock %}
-
 {% block contenu %}
 <div class="register-container">
-    <!-- En-tête -->
     <div class="header">
-        <h1>📝 Créer un compte</h1>
-        <p class="subtitle">Rejoignez la communauté MonFace</p>
+        <h1>
+            <span class="title-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z"></path>
+                </svg>
+            </span>
+            Creer un compte
+        </h1>
+        <p class="subtitle">Rejoignez la communaute UMP Face</p>
     </div>
-    
-    <!-- ========================================
-         SÉLECTEUR DU TYPE D'UTILISATEUR
-         ======================================== -->
+
     <div class="user-type-selector">
         <p class="selection-label">Je suis :</p>
         <div class="button-group">
-            <!-- Bouton Étudiant -->
-            <a href="{% url 'register' %}?type=student" 
-               class="type-button {% if user_type == 'student' %}active{% endif %}">
-                <span class="icon">🎓</span>
-                <span class="text">Étudiant</span>
+            <a href="{% url 'register' %}?type=student" class="type-button {% if user_type == 'student' %}active{% endif %}">
+                <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 8l10-5 10 5-10 5-10-5z"></path>
+                        <path d="M6 12v5c0 1 6 3 6 3s6-2 6-3v-5"></path>
+                    </svg>
+                </span>
+                <span class="text">Etudiant</span>
             </a>
-            
-            <!-- Bouton Employé -->
-            <a href="{% url 'register' %}?type=employee" 
-               class="type-button {% if user_type == 'employee' %}active{% endif %}">
-                <span class="icon">💼</span>
-                <span class="text">Employé</span>
+
+            <a href="{% url 'register' %}?type=employee" class="type-button {% if user_type == 'employee' %}active{% endif %}">
+                <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7h18"></path>
+                        <path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path>
+                        <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                    </svg>
+                </span>
+                <span class="text">Employe</span>
             </a>
         </div>
     </div>
-    
-    <!-- Afficher les erreurs globales du formulaire -->
+
     {% if form.non_field_errors %}
         <div class="alert alert-danger">
-            <strong>⚠️ Erreur :</strong>
+            <strong>Erreur :</strong>
             {{ form.non_field_errors }}
         </div>
     {% endif %}
-    
-    <!-- ========================================
-         FORMULAIRE D'INSCRIPTION
-         ======================================== -->
+
     <form action="{% url 'register' %}" method="post" class="register-form">
         {% csrf_token %}
-        
-        <!-- Champ caché pour stocker le type d'utilisateur -->
         <input type="hidden" name="user_type" value="{{ user_type }}">
-        
+
         <div class="form-sections">
-            <!-- Section Informations personnelles -->
             <div class="form-section">
-                <h3>👤 Informations personnelles</h3>
-                
+                <h3>
+                    <span class="section-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 20c2.5-4 13.5-4 16 0"></path>
+                        </svg>
+                    </span>
+                    Informations personnelles
+                </h3>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="id_nom">{{ form.nom.label }} *</label>
@@ -63,7 +71,7 @@
                             <div class="error-message">{{ form.nom.errors.0 }}</div>
                         {% endif %}
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="id_prenom">{{ form.prenom.label }} *</label>
                         {{ form.prenom }}
@@ -72,7 +80,7 @@
                         {% endif %}
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="id_date_naissance">{{ form.date_naissance.label }} *</label>
                     {{ form.date_naissance }}
@@ -80,7 +88,7 @@
                         <div class="error-message">{{ form.date_naissance.errors.0 }}</div>
                     {% endif %}
                 </div>
-                
+
                 <div class="form-group">
                     <label for="id_tlf">{{ form.tlf.label }} *</label>
                     {{ form.tlf }}
@@ -89,11 +97,19 @@
                     {% endif %}
                 </div>
             </div>
-            
-            <!-- Section Connexion -->
+
             <div class="form-section">
-                <h3>🔐 Informations de connexion</h3>
-                
+                <h3>
+                    <span class="section-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 17v-2"></path>
+                            <rect x="5" y="11" width="14" height="9" rx="2"></rect>
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                        </svg>
+                    </span>
+                    Informations de connexion
+                </h3>
+
                 <div class="form-group">
                     <label for="id_email">{{ form.email.label }} *</label>
                     {{ form.email }}
@@ -104,7 +120,7 @@
                         <div class="error-message">{{ form.email.errors.0 }}</div>
                     {% endif %}
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="id_password">{{ form.password.label }} *</label>
@@ -116,7 +132,7 @@
                             <div class="error-message">{{ form.password.errors.0 }}</div>
                         {% endif %}
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="id_confirm_password">{{ form.confirm_password.label }} *</label>
                         {{ form.confirm_password }}
@@ -126,11 +142,18 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Section Faculté (commune aux deux types) -->
+
             <div class="form-section">
-                <h3>🏛️ Affiliation</h3>
-                
+                <h3>
+                    <span class="section-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 10.5L12 3l9 7.5"></path>
+                            <path d="M5 10v10h14V10"></path>
+                        </svg>
+                    </span>
+                    Affiliation
+                </h3>
+
                 <div class="form-group">
                     <label for="id_faculty">{{ form.faculty.label }} *</label>
                     {{ form.faculty }}
@@ -139,14 +162,19 @@
                     {% endif %}
                 </div>
             </div>
-            
-            <!-- ========================================
-                 SECTION SPÉCIFIQUE ÉTUDIANT
-                 ======================================== -->
+
             {% if user_type == 'student' %}
             <div class="form-section">
-                <h3>📚 Informations académiques</h3>
-                
+                <h3>
+                    <span class="section-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 8l10-5 10 5-10 5-10-5z"></path>
+                            <path d="M6 12v5c0 1 6 3 6 3s6-2 6-3v-5"></path>
+                        </svg>
+                    </span>
+                    Informations academiques
+                </h3>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="id_annee">{{ form.annee.label }} *</label>
@@ -158,7 +186,7 @@
                             <div class="error-message">{{ form.annee.errors.0 }}</div>
                         {% endif %}
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="id_cursus">{{ form.cursus.label }} *</label>
                         {{ form.cursus }}
@@ -169,14 +197,20 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- ========================================
-                 SECTION SPÉCIFIQUE EMPLOYÉ
-                 ======================================== -->
+
             {% if user_type == 'employee' %}
             <div class="form-section">
-                <h3>💼 Informations professionnelles</h3>
-                
+                <h3>
+                    <span class="section-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7h18"></path>
+                            <path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path>
+                            <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                        </svg>
+                    </span>
+                    Informations professionnelles
+                </h3>
+
                 <div class="form-group">
                     <label for="id_office">{{ form.office.label }} *</label>
                     {{ form.office }}
@@ -187,7 +221,7 @@
                         <div class="error-message">{{ form.office.errors.0 }}</div>
                     {% endif %}
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="id_campus">{{ form.campus.label }} *</label>
@@ -196,7 +230,7 @@
                             <div class="error-message">{{ form.campus.errors.0 }}</div>
                         {% endif %}
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="id_job">{{ form.job.label }} *</label>
                         {{ form.job }}
@@ -208,296 +242,340 @@
             </div>
             {% endif %}
         </div>
-        
-        <!-- Boutons d'action -->
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                ✅ Créer mon compte
+                <span class="btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M8 12h8"></path>
+                        <path d="M12 8v8"></path>
+                    </svg>
+                </span>
+                Creer mon compte
             </button>
-            
+
             <a href="{% url 'login' %}" class="btn btn-secondary">
-                ← J'ai déjà un compte
+                <span class="btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <path d="M10 17l5-5-5-5"></path>
+                        <path d="M15 12H3"></path>
+                    </svg>
+                </span>
+                J'ai deja un compte
             </a>
         </div>
-        
+
         <p class="required-note">* Champs obligatoires</p>
     </form>
 </div>
 
-<!-- Styles CSS -->
 <style>
     #registerPage {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%),
+                    radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%),
+                    linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
         min-height: 100vh;
         padding: 40px 20px;
     }
-    
+
     .register-container {
-        max-width: 700px;
+        max-width: 760px;
         margin: 0 auto;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        background: rgba(12, 22, 36, 0.92);
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgba(2, 8, 14, 0.55);
         overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e6f1f3;
     }
-    
-    /* En-tête */
+
     .header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px 30px;
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.2), rgba(24, 56, 88, 0.65));
+        color: #e6f1f3;
+        padding: 36px 30px;
         text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
-    
+
     .header h1 {
         font-size: 28px;
         margin: 0 0 10px 0;
         border: none;
         padding: 0;
-        color: white;
+        color: #e6f1f3;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: 0.4px;
     }
-    
+
+    .title-icon,
+    .section-icon,
+    .btn-icon,
+    .icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+    }
+
+    .title-icon svg,
+    .section-icon svg,
+    .btn-icon svg,
+    .icon svg {
+        width: 100%;
+        height: 100%;
+    }
+
     .subtitle {
-        font-size: 16px;
-        opacity: 0.9;
+        font-size: 15px;
+        opacity: 0.85;
         margin: 0;
+        color: rgba(230, 241, 243, 0.75);
     }
-    
-    /* Sélecteur de type d'utilisateur */
+
     .user-type-selector {
-        padding: 30px;
-        background: #f8f9fa;
-        border-bottom: 2px solid #e0e0e0;
+        padding: 26px 30px;
+        background: rgba(255, 255, 255, 0.04);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
-    
+
     .selection-label {
         text-align: center;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        margin-bottom: 20px;
-        color: #333;
+        margin-bottom: 18px;
+        color: #e6f1f3;
     }
-    
+
     .button-group {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 16px;
     }
-    
+
     .type-button {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 25px 20px;
-        background-color: white;
-        border: 3px solid #e0e0e0;
-        border-radius: 12px;
+        padding: 20px 18px;
+        background: rgba(10, 18, 24, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 14px;
         text-decoration: none;
-        color: #333;
+        color: #e6f1f3;
         transition: all 0.3s ease;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 24px rgba(2, 8, 14, 0.3);
     }
-    
+
     .type-button:hover {
-        border-color: #667eea;
+        border-color: rgba(50, 199, 194, 0.5);
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 16px 30px rgba(2, 8, 14, 0.45);
     }
-    
+
     .type-button.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-color: #667eea;
-        color: white;
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.3), rgba(24, 56, 88, 0.8));
+        border-color: rgba(50, 199, 194, 0.6);
+        color: #f7fbfb;
+        box-shadow: 0 18px 35px rgba(2, 8, 14, 0.55);
     }
-    
+
     .type-button .icon {
-        font-size: 48px;
-        margin-bottom: 12px;
+        width: 36px;
+        height: 36px;
+        margin-bottom: 10px;
     }
-    
+
     .type-button .text {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
     }
-    
-    /* Formulaire */
+
     .register-form {
-        padding: 30px;
+        padding: 28px 30px;
     }
-    
+
     .form-sections {
         margin-bottom: 20px;
     }
-    
+
     .form-section {
-        margin-bottom: 30px;
-        padding-bottom: 30px;
-        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 28px;
+        padding-bottom: 26px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
-    
+
     .form-section:last-child {
         border-bottom: none;
     }
-    
+
     .form-section h3 {
-        font-size: 18px;
-        color: #667eea;
-        margin-bottom: 20px;
+        font-size: 16px;
+        color: #e6f1f3;
+        margin-bottom: 16px;
         font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
-    
+
     .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 14px;
     }
-    
+
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
-    
+
     .form-group label {
         display: block;
         font-weight: 600;
         margin-bottom: 8px;
-        color: #333;
+        color: #e6f1f3;
         font-size: 14px;
     }
-    
+
     .form-group input,
     .form-group select {
         width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 6px;
-        font-size: 15px;
+        padding: 12px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 10px;
+        font-size: 14px;
         transition: all 0.3s;
+        background: rgba(9, 16, 26, 0.6);
+        color: #e6f1f3;
     }
-    
+
     .form-group input:focus,
     .form-group select:focus {
         outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        border-color: rgba(50, 199, 194, 0.6);
+        box-shadow: 0 0 0 3px rgba(50, 199, 194, 0.18);
     }
-    
+
     .help-text {
         display: block;
         margin-top: 5px;
-        font-size: 13px;
-        color: #666;
+        font-size: 12px;
+        color: rgba(230, 241, 243, 0.6);
         font-style: italic;
     }
-    
-    /* Messages d'erreur */
+
     .alert {
-        padding: 15px 20px;
+        padding: 14px 18px;
         margin: 0 30px 20px 30px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 14px;
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #ffd3d3;
     }
-    
-    .alert-danger {
-        background-color: #fee;
-        border: 1px solid #fcc;
-        color: #c33;
-    }
-    
+
     .error-message {
-        color: #e74c3c;
-        font-size: 13px;
+        color: #ffb4b4;
+        font-size: 12px;
         margin-top: 5px;
         display: block;
     }
-    
-    /* Boutons */
+
     .form-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 14px;
         margin-top: 30px;
-        padding-top: 30px;
-        border-top: 2px solid #f0f0f0;
+        padding-top: 26px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
     }
-    
+
     .btn {
-        padding: 14px 25px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
+        padding: 13px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        font-size: 15px;
         font-weight: 600;
         text-decoration: none;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #e6f1f3;
     }
-    
+
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
+        border-color: rgba(50, 199, 194, 0.5);
+        color: #f7fbfb;
     }
-    
+
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 12px 24px rgba(2, 8, 14, 0.45);
     }
-    
+
     .btn-secondary {
-        background-color: #6c757d;
-        color: white;
+        background: rgba(255, 255, 255, 0.05);
+        color: #e6f1f3;
+        border-color: rgba(121, 167, 227, 0.6);
     }
-    
+
     .btn-secondary:hover {
-        background-color: #5a6268;
+        background: rgba(121, 167, 227, 0.2);
         transform: translateY(-2px);
     }
-    
+
     .required-note {
         text-align: center;
-        font-size: 13px;
-        color: #666;
-        margin-top: 20px;
+        font-size: 12px;
+        color: rgba(230, 241, 243, 0.6);
+        margin-top: 16px;
         font-style: italic;
     }
-    
-    /* Responsive */
+
     @media (max-width: 768px) {
         #registerPage {
             padding: 20px 10px;
         }
-        
+
         .register-container {
-            border-radius: 8px;
+            border-radius: 12px;
         }
-        
+
         .header {
-            padding: 30px 20px;
+            padding: 28px 20px;
         }
-        
+
         .header h1 {
             font-size: 24px;
         }
-        
+
         .user-type-selector {
             padding: 20px;
         }
-        
+
         .button-group {
             grid-template-columns: 1fr;
         }
-        
+
         .register-form {
             padding: 20px;
         }
-        
+
         .form-row {
             grid-template-columns: 1fr;
         }
-        
+
         .form-actions {
             grid-template-columns: 1fr;
         }

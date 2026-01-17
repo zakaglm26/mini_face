@@ -1,42 +1,7 @@
-
-
+{% extends "base.html" %}
 
 {% block contenu %}
-<div class="welcome-container">
-    <!-- ========================================
-         HEADER / NAVIGATION
-         ======================================== -->
-    <header class="navbar">
-        <div class="navbar-content">
-            <div class="logo">
-                <span class="logo-icon">📘</span>
-                <span class="logo-text">MonFace</span>
-            </div>
-            
-            <nav class="nav-links">
-                <a href="{% url 'welcome' %}" class="nav-link active">
-                    Accueil
-                </a>
-                <!-- MODIFIÉ : Lien vers mon profil -->
-                <a href="{% url 'view_profile' logged_user.id %}" class="nav-link">
-                    Mon Profil
-                </a>
-                <a href="{% url 'search_users' %}" class="nav-link">Amis</a>
-                
-                <a href="#" class="nav-link">
-                    Messages
-                </a>
-            </nav>
-            
-            <div class="user-menu">
-                <span class="user-name">{{ logged_user.prenom }} {{ logged_user.nom }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">
-                    Déconnexion
-                </a>
-            </div>
-        </div>
-    </header>
-    
+
     <!-- ========================================
          CONTENU PRINCIPAL
          ======================================== -->
@@ -54,7 +19,7 @@
                 
                 {% if logged_user.annee %}
                     <div class="profile-info">
-                        <p class="user-type">🎓 Étudiant</p>
+                        <p class="user-type">Étudiant</p>
                         <p class="user-detail">
                             <strong>Année :</strong> {{ logged_user.annee }}
                         </p>
@@ -67,7 +32,7 @@
                     </div>
                 {% else %}
                     <div class="profile-info">
-                        <p class="user-type">💼 Employé</p>
+                        <p class="user-type">Employé</p>
                         <p class="user-detail">
                             <strong>Poste :</strong> {{ logged_user.job.titre }}
                         </p>
@@ -85,11 +50,11 @@
                 
                 <div class="profile-contact">
                     <p class="user-detail">
-                        <strong>📧 Email :</strong><br>
+                        <strong>Email :</strong><br>
                         {{ logged_user.email }}
                     </p>
                     <p class="user-detail">
-                        <strong>📱 Téléphone :</strong><br>
+                        <strong>Téléphone :</strong><br>
                         {{ logged_user.tlf }}
                     </p>
                 </div>
@@ -97,14 +62,14 @@
                 <div class="profile-actions">
                     <!-- MODIFIÉ : Lien vers mon profil -->
                     <a href="{% url 'view_profile' logged_user.id %}" class="btn-edit-profile">
-                        👤 Voir mon profil
+                        Voir mon profil
                     </a>
                 </div>
             </div>
             
             <!-- Amis -->
             <div class="friends-widget">
-                <h3>👥 Mes amis ({{ logged_user.amis.count }})</h3>
+                <h3>Mes amis ({{ logged_user.amis.count }})</h3>
                 {% if logged_user.amis.all %}
                     <ul class="friends-list">
                         {% for ami in logged_user.amis.all %}
@@ -131,7 +96,7 @@
         <!-- Contenu central : Fil d'actualité -->
         <main class="content-center">
             <div class="welcome-message">
-                <h1>👋 Bienvenue, {{ logged_user.prenom }} !</h1>
+                <h1>Bienvenue, {{ logged_user.prenom }} !</h1>
                 <p class="welcome-subtitle">
                     {% if logged_user.annee %}
                         Vous êtes étudiant en {{ logged_user.cursus.titre }}, année {{ logged_user.annee }}.
@@ -143,7 +108,7 @@
             
             <!-- Formulaire de publication -->
             <div class="post-form-card">
-                <h3>✍️ Publier un message</h3>
+                <h3>Publier un message</h3>
                 
                 <!-- Afficher les erreurs du formulaire -->
                 {% if form.errors %}
@@ -163,14 +128,14 @@
                     {{ form.contenu }}
                     
                     <button type="submit" class="btn-publish">
-                        📤 Publier
+                        Publier
                     </button>
                 </form>
             </div>
             
             <!-- Liste des messages -->
             <div class="messages-feed">
-                <h3>📰 Fil d'actualité</h3>
+                <h3>Fil d'actualité</h3>
                 
                 {% if messages %}
                     {% for message in messages %}
@@ -191,9 +156,9 @@
                                     </strong>
                                     <span class="message-meta">
                                         {% if message.auteur.annee %}
-                                            🎓 Étudiant
+                                            Étudiant
                                         {% else %}
-                                            💼 {{ message.auteur.job.titre }}
+                                            {{ message.auteur.job.titre }}
                                         {% endif %}
                                         · {{ message.date_publication|date:"d/m/Y à H:i" }}
                                     </span>
@@ -219,7 +184,7 @@
                     {% endfor %}
                 {% else %}
                     <div class="no-messages">
-                        <p>😊 Aucun message pour le moment.</p>
+                        <p>Aucun message pour le moment.</p>
                         <p>Publiez votre premier message ou ajoutez des amis !</p>
                     </div>
                 {% endif %}
@@ -229,24 +194,24 @@
         <!-- Sidebar droite : Suggestions -->
         <aside class="sidebar-right">
             <div class="suggestions-widget">
-                <h3>💡 Suggestions</h3>
+                <h3>Suggestions</h3>
                 <ul class="suggestions-list">
                     <li>
-                        <span class="suggestion-icon">✏️</span>
+                        <span class="suggestion-icon"></span>
                         <div>
                             <strong>Complétez votre profil</strong>
                             <p>Ajoutez une photo de profil</p>
                         </div>
                     </li>
                     <li>
-                        <span class="suggestion-icon">👥</span>
+                        <span class="suggestion-icon"></span>
                         <div>
                             <strong>Trouvez des amis</strong>
                             <p>Connectez-vous avec vos camarades</p>
                         </div>
                     </li>
                     <li>
-                        <span class="suggestion-icon">💬</span>
+                        <span class="suggestion-icon"></span>
                         <div>
                             <strong>Publiez un message</strong>
                             <p>Partagez vos pensées</p>
@@ -256,7 +221,7 @@
             </div>
             
             <div class="stats-widget">
-                <h3>📊 Statistiques</h3>
+                <h3>Statistiques</h3>
                 <div class="stat-item">
                     <span class="stat-number">{{ logged_user.amis.count }}</span>
                     <span class="stat-label">Amis</span>
@@ -313,92 +278,7 @@
         padding: 0;
     }
     
-    /* ===== NAVBAR ===== */
-    .navbar {
-        background: linear-gradient(135deg, #0f2b46 0%, #153a5c 100%);
-        box-shadow: 0 8px 30px rgba(15, 43, 70, 0.25);
-        padding: 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
     
-    .navbar-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #fef7e3;
-        font-size: 24px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        font-family: "Playfair Display", "Times New Roman", serif;
-    }
-    
-    .logo-icon {
-        font-size: 32px;
-    }
-    
-    .nav-links {
-        display: flex;
-        gap: 30px;
-    }
-    
-    .nav-link {
-        color: #fef7e3;
-        text-decoration: none;
-        padding: 8px 15px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        font-weight: 500;
-        border: 1px solid transparent;
-    }
-    
-    .nav-link:hover {
-        background-color: rgba(240, 199, 94, 0.18);
-        border-color: rgba(240, 199, 94, 0.35);
-        transform: translateY(-2px);
-    }
-    
-    .nav-link.active {
-        background-color: rgba(240, 199, 94, 0.25);
-        border-color: rgba(240, 199, 94, 0.45);
-    }
-    
-    .user-menu {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: #fef7e3;
-    }
-    
-    .user-name {
-        font-weight: 600;
-    }
-    
-    .btn-logout {
-        background-color: rgba(240, 199, 94, 0.2);
-        color: #fef7e3;
-        padding: 8px 15px;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.3s;
-        font-weight: 500;
-        border: 1px solid rgba(240, 199, 94, 0.35);
-    }
-    
-    .btn-logout:hover {
-        background-color: rgba(240, 199, 94, 0.35);
-        transform: translateY(-2px);
-    }
     
     /* ===== LAYOUT PRINCIPAL ===== */
     .main-content {
