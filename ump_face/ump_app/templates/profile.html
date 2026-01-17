@@ -1,852 +1,266 @@
-
-
-{% block title %}Profil de {{ profile_user.prenom }} {{ profile_user.nom }} - Mon Face{% endblock %}
-
-{% block bodyId %}profilePage{% endblock %}
+{% extends "base.html" %}
 
 {% block contenu %}
 <div class="profile-container">
-    <!-- ========================================
-         HEADER / NAVIGATION
-         ======================================== -->
-    <header class="navbar">
-        <div class="navbar-content">
-            <div class="logo">
-                <span class="logo-icon">📘</span>
-                <span class="logo-text">MonFace</span>
-            </div>
-            
-            <nav class="nav-links">
-                <a href="{% url 'welcome' %}" class="nav-link">
-                    Accueil
-                </a>
-                <a href="{% url 'view_profile' logged_user.id %}" class="nav-link">
-                    Mon Profil
-                </a>
-                <a href="#" class="nav-link">
-                    Amis
-                </a>
-                <a href="#" class="nav-link">
-                    Messages
-                </a>
-            </nav>
-            
-            <div class="user-menu">
-                <span class="user-name">{{ logged_user.prenom }} {{ logged_user.nom }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">
-                    Déconnexion
-                </a>
-            </div>
-        </div>
-    </header>
-    
-    <!-- ========================================
-         CONTENU PRINCIPAL
-         ======================================== -->
     <div class="main-content">
-        <!-- Colonne gauche : Informations du profil -->
+        
         <aside class="sidebar-left">
-            <!-- Photo de profil et nom -->
-            <div class="profile-header-card">
-                <div class="profile-cover">
-                    <!-- Couverture avec gradient -->
+            <div class="profile-card">
+                <div class="profile-cover"></div>
+                <div class="profile-header-inline">
+                    <div class="profile-avatar-large">
+                        {{ profile_user.prenom.0 }}{{ profile_user.nom.0 }}
+                    </div>
+                    <div class="profile-heading-text">
+                        <h2 class="profile-name-large">{{ profile_user.prenom }} {{ profile_user.nom }}</h2>
+                        {% if profile_user.annee %}
+                            <p class="profile-type">Étudiant</p>
+                        {% else %}
+                            <p class="profile-type">Employé</p>
+                        {% endif %}
+                    </div>
                 </div>
                 
-                <div class="profile-avatar-large">
-                    {{ profile_user.prenom.0 }}{{ profile_user.nom.0 }}
+                <div class="profile-actions">
+                    {% if is_own_profile %}
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Modifier mon profil</a>
+                    {% else %}
+                        {% if is_friend %}
+                            <button class="btn btn-success" disabled>Vous êtes amis</button>
+                            <a href="{% url 'remove_friend' profile_user.id %}" class="btn btn-danger" onclick="return confirm('Retirer des amis ?');">Retirer</a>
+                        {% else %}
+                            <a href="{% url 'add_friend' profile_user.id %}" class="btn btn-primary">Ajouter comme ami</a>
+                        {% endif %}
+                        <button class="btn btn-outline">Envoyer un message</button>
+                    {% endif %}
                 </div>
-                
-                <h2 class="profile-name-large">
-                    {{ profile_user.prenom }} {{ profile_user.nom }}
-                </h2>
-                
-                <!-- Type d'utilisateur -->
-                {% if profile_user.annee %}
-                    <p class="profile-type">🎓 Étudiant</p>
-                {% else %}
-                    <p class="profile-type">💼 Employé</p>
-                {% endif %}
-                
-                <!-- Boutons d'action -->
-            <div class="profile-actions">
-                {% if is_own_profile %}
-                    <!-- C'est mon profil -->
-                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">
-                        ✏️ Modifier mon profil
-                    </a>
-                {% else %}
-                    <!-- C'est le profil de quelqu'un d'autre -->
-                    {% if is_friend %}
-                        <!-- MODIFIÉ : Boutons avec liens fonctionnels -->
-                        <button class="btn btn-success" disabled>
-                            ✅ Vous êtes amis
-                        </button>
-                        <a href="{% url 'remove_friend' profile_user.id %}" 
-                        class="btn btn-danger"
-                        onclick="return confirm('Êtes-vous sûr de vouloir retirer {{ profile_user.prenom }} de vos amis ?');">
-                            ❌ Retirer des amis
-                        </a>
-                    {% else %}
-                        <!-- MODIFIÉ : Bouton ajouter avec lien fonctionnel -->
-                        <a href="{% url 'add_friend' profile_user.id %}" class="btn btn-primary">
-                            ➕ Ajouter comme ami
-                        </a>
-                    {% endif %}
-                    
-                    <button class="btn btn-outline">
-                        💬 Envoyer un message
-                    </button>
-                {% endif %}
-            </div>
-            
-            <!-- Informations détaillées -->
-            <div class="profile-info-card">
-                <h3>📋 Informations</h3>
-                
-                <div class="info-list">
-                    {% if profile_user.annee %}
-                        <!-- Étudiant -->
-                        <div class="info-item">
-                            <span class="info-icon">🎓</span>
-                            <div class="info-content">
-                                <strong>Année</strong>
-                                <p>{{ profile_user.annee }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <span class="info-icon">📚</span>
-                            <div class="info-content">
-                                <strong>Cursus</strong>
-                                <p>{{ profile_user.cursus.titre }}</p>
-                            </div>
-                        </div>
-                    {% else %}
-                        <!-- Employé -->
-                        <div class="info-item">
-                            <span class="info-icon">💼</span>
-                            <div class="info-content">
-                                <strong>Poste</strong>
-                                <p>{{ profile_user.job.titre }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <span class="info-icon">🏢</span>
-                            <div class="info-content">
-                                <strong>Bureau</strong>
-                                <p>{{ profile_user.office }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <span class="info-icon">🏫</span>
-                            <div class="info-content">
-                                <strong>Campus</strong>
-                                <p>{{ profile_user.campus.nom }}</p>
-                            </div>
-                        </div>
-                    {% endif %}
-                    
-                    <div class="info-item">
-                        <span class="info-icon">🏛️</span>
-                        <div class="info-content">
-                            <strong>Faculté</strong>
-                            <p>{{ profile_user.faculty.nom }}</p>
+
+                <div class="profile-details-row">
+                    <div class="profile-info-card">
+                        <h3>Informations</h3>
+                        <div class="info-grid-horizontal">
+                            <div class="info-item-box"><strong>Faculté</strong><p>{{ profile_user.faculty.nom }}</p></div>
+                            {% if profile_user.annee %}
+                                <div class="info-item-box"><strong>Année</strong><p>{{ profile_user.annee }}</p></div>
+                                <div class="info-item-box"><strong>Cursus</strong><p>{{ profile_user.cursus.titre }}</p></div>
+                            {% endif %}
+                            {% if is_own_profile or is_friend %}
+                                <div class="info-item-box"><strong>Email</strong><p>{{ profile_user.email }}</p></div>
+                            {% endif %}
                         </div>
                     </div>
-                    
-                    <!-- Email et téléphone (seulement si c'est mon profil ou un ami) -->
-                    {% if is_own_profile or is_friend %}
-                        <div class="info-item">
-                            <span class="info-icon">📧</span>
-                            <div class="info-content">
-                                <strong>Email</strong>
-                                <p>{{ profile_user.email }}</p>
+
+                    <div class="profile-stats-card">
+                        <h3>Statistiques</h3>
+                        <div class="stats-mini-grid">
+                            <div class="stat-pill">
+                                <span class="stat-val">{{ profile_user.amis.count }}</span>
+                                <span class="stat-lab">Amis</span>
+                            </div>
+                            <div class="stat-pill">
+                                <span class="stat-val">{{ user_messages|length }}</span>
+                                <span class="stat-lab">Messages</span>
                             </div>
                         </div>
-                        
-                        <div class="info-item">
-                            <span class="info-icon">📱</span>
-                            <div class="info-content">
-                                <strong>Téléphone</strong>
-                                <p>{{ profile_user.tlf }}</p>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <!-- Statistiques -->
-            <div class="profile-stats-card">
-                <h3>📊 Statistiques</h3>
-                
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <span class="stat-number">{{ profile_user.amis.count }}</span>
-                        <span class="stat-label">Amis</span>
-                    </div>
-                    
-                    <div class="stat-box">
-                        <span class="stat-number">{{ user_messages|length }}</span>
-                        <span class="stat-label">Messages</span>
                     </div>
                 </div>
             </div>
         </aside>
-        
-        <!-- Colonne centrale : Messages de l'utilisateur -->
+
         <main class="content-center">
             <div class="messages-section">
-                <h3>📝 Messages de {{ profile_user.prenom }}</h3>
+                <div class="section-header">
+                    <h3>Messages de {{ profile_user.prenom }}</h3>
+                </div>
                 
                 {% if user_messages %}
                     {% for message in user_messages %}
                         <div class="message-card">
                             <div class="message-header">
-                                <div class="message-avatar">
-                                    {{ message.auteur.prenom.0 }}{{ message.auteur.nom.0 }}
-                                </div>
+                                <div class="message-avatar">{{ message.auteur.prenom.0 }}{{ message.auteur.nom.0 }}</div>
                                 <div class="message-author-info">
                                     <strong>{{ message.auteur.prenom }} {{ message.auteur.nom }}</strong>
-                                    <span class="message-meta">
-                                        {{ message.date_publication|date:"d/m/Y à H:i" }}
-                                    </span>
+                                    <span class="message-meta">{{ message.date_publication|date:"d/m/Y à H:i" }}</span>
                                 </div>
                             </div>
-                            
-                            <div class="message-content">
-                                {{ message.contenu|linebreaks }}
-                            </div>
-                            
-                            <div class="message-actions">
-                                <button class="message-action-btn">
-                                    ❤️ J'aime
-                                </button>
-                                <button class="message-action-btn">
-                                    💬 Commenter
-                                </button>
-                                <button class="message-action-btn">
-                                    🔗 Partager
-                                </button>
-                            </div>
+                            <div class="message-content">{{ message.contenu|linebreaks }}</div>
                         </div>
                     {% endfor %}
                 {% else %}
-                    <div class="no-messages">
-                        <p>😊 {{ profile_user.prenom }} n'a pas encore publié de message.</p>
-                    </div>
+                    <div class="empty-box"><p>Aucun message publié sur ce profil.</p></div>
                 {% endif %}
             </div>
         </main>
-        
-        <!-- Colonne droite : Amis de l'utilisateur -->
+
         <aside class="sidebar-right">
             <div class="friends-section-card">
-                <h3>👥 Amis de {{ profile_user.prenom }} ({{ profile_user.amis.count }})</h3>
-                
-                {% if profile_user.amis.all %}
-                    <ul class="friends-grid">
-                        {% for ami in profile_user.amis.all %}
-                            <li class="friend-card">
-                                <a href="{% url 'view_profile' ami.id %}">
-                                    <div class="friend-avatar-small">
-                                        {{ ami.prenom.0 }}{{ ami.nom.0 }}
-                                    </div>
-                                    <span class="friend-name-small">
-                                        {{ ami.prenom }} {{ ami.nom }}
-                                    </span>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="no-friends-text">
-                        {{ profile_user.prenom }} n'a pas encore d'amis.
-                    </p>
-                {% endif %}
-            </div>
-            
-            <!-- Amis en commun (si ce n'est pas mon profil) -->
-            {% if not is_own_profile %}
-                <div class="mutual-friends-card">
-                    <h3>👫 Amis en commun</h3>
-                    
-                    {% with mutual_friends=logged_user.amis.all|slice:":5" %}
-                        {% if mutual_friends %}
-                            <ul class="mutual-friends-list">
-                                {% for ami in mutual_friends %}
-                                    {% if ami in profile_user.amis.all %}
-                                        <li class="mutual-friend-item">
-                                            <a href="{% url 'view_profile' ami.id %}">
-                                                <div class="mutual-friend-avatar">
-                                                    {{ ami.prenom.0 }}{{ ami.nom.0 }}
-                                                </div>
-                                                <span>{{ ami.prenom }} {{ ami.nom }}</span>
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="no-mutual-text">Aucun ami en commun</p>
-                        {% endif %}
-                    {% endwith %}
+                <div class="card-title-row">
+                    <h3>Amis</h3>
+                    <span class="count-badge">{{ profile_user.amis.count }}</span>
                 </div>
+                
+                <ul class="friends-grid-modern">
+                    {% for ami in profile_user.amis.all %}
+                        <li class="friend-card-mini">
+                            <a href="{% url 'view_profile' ami.id %}">
+                                <div class="friend-avatar-sq">{{ ami.prenom.0 }}{{ ami.nom.0 }}</div>
+                                <span class="friend-name-text">{{ ami.prenom }}</span>
+                            </a>
+                        </li>
+                    {% empty %}
+                        <p class="no-data">Aucun ami.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% if not is_own_profile %}
+            <div class="mutual-friends-card">
+                <h3>Amis en commun</h3>
+                <div class="mutual-list">
+                    {% for ami in logged_user.amis.all %}
+                        {% if ami in profile_user.amis.all %}
+                        <a href="{% url 'view_profile' ami.id %}" class="mutual-item">
+                            <div class="tiny-avatar">{{ ami.prenom.0 }}{{ ami.nom.0 }}</div>
+                            <span>{{ ami.prenom }}</span>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
             {% endif %}
         </aside>
+
     </div>
 </div>
 
-<!-- ========================================
-     STYLES CSS
-     ======================================== -->
 <style>
-    #profilePage {
-        background-color: #f0f2f5;
-        min-height: 100vh;
-        padding: 0;
-        margin: 0;
+    :root {
+        --glass: rgba(255, 255, 255, 0.07);
+        --glass-hover: rgba(50, 199, 194, 0.12);
+        --line: rgba(255, 255, 255, 0.12);
+        --ink: #eef5f6;
+        --muted: rgba(238, 245, 246, 0.6);
+        --accent: #32c7c2;
+        --accent-glow: rgba(50, 199, 194, 0.3);
+        --bg-body: #0a1218;
+        --radius: 20px;
     }
-    
-    .profile-container {
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-    
-    /* ===== NAVBAR (même style que welcome) ===== */
-    .navbar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        padding: 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-    
-    .navbar-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-    }
-    
-    .logo-icon {
-        font-size: 32px;
-    }
-    
-    .nav-links {
-        display: flex;
-        gap: 30px;
-    }
-    
-    .nav-link {
-        color: white;
-        text-decoration: none;
-        padding: 8px 15px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        font-weight: 500;
-    }
-    
-    .nav-link:hover {
-        background-color: rgba(255,255,255,0.2);
-        transform: translateY(-2px);
-    }
-    
-    .user-menu {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: white;
-    }
-    
-    .user-name {
-        font-weight: 600;
-    }
-    
-    .btn-logout {
-        background-color: rgba(255,255,255,0.2);
-        color: white;
-        padding: 8px 15px;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.3s;
-        font-weight: 500;
-    }
-    
-    .btn-logout:hover {
-        background-color: rgba(255,255,255,0.3);
-        transform: translateY(-2px);
-    }
-    
-    /* ===== LAYOUT PRINCIPAL ===== */
+
+    /* STRUCTURE DU LAYOUT EN GRILLE */
     .main-content {
         max-width: 1400px;
-        margin: 30px auto;
-        padding: 0 30px;
-        display: grid;
-        grid-template-columns: 350px 1fr 300px;
-        gap: 25px;
-    }
-    
-    /* ===== CARTE HEADER PROFIL ===== */
-    .profile-header-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        overflow: hidden;
-        margin-bottom: 20px;
-        transition: all 0.3s;
-    }
-    
-    .profile-header-card:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        transform: translateY(-2px);
-    }
-    
-    .profile-cover {
-        height: 120px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    .profile-avatar-large {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 48px;
-        font-weight: bold;
-        margin: -60px auto 15px;
-        border: 5px solid white;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        transition: all 0.3s;
-    }
-    
-    .profile-avatar-large:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    }
-    
-    .profile-name-large {
-        text-align: center;
-        font-size: 24px;
-        margin-bottom: 5px;
-        color: #333;
+        margin: 40px auto;
         padding: 0 20px;
-    }
-    
-    .profile-type {
-        text-align: center;
-        font-size: 16px;
-        color: #667eea;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
-    
-    .profile-actions {
-        padding: 0 20px 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    /* ===== BOUTONS ===== */
-    .btn {
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-align: center;
-        text-decoration: none;
-        display: block;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-secondary {
-        background: #10b981;
-        color: white;
-    }
-    
-    .btn-secondary:hover {
-        background: #059669;
-        transform: translateY(-2px);
-    }
-    
-    .btn-outline {
-        background: white;
-        color: #667eea;
-        border: 2px solid #667eea;
-    }
-    
-    .btn-outline:hover {
-        background: #667eea;
-        color: white;
-        transform: translateY(-2px);
-    }
-    
-    /* ===== CARTE INFORMATIONS ===== */
-    .profile-info-card,
-    .profile-stats-card,
-    .friends-section-card,
-    .mutual-friends-card {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-        transition: all 0.3s;
-    }
-    
-    .profile-info-card:hover,
-    .profile-stats-card:hover,
-    .friends-section-card:hover,
-    .mutual-friends-card:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        transform: translateY(-2px);
-    }
-    
-    .profile-info-card h3,
-    .profile-stats-card h3,
-    .friends-section-card h3,
-    .mutual-friends-card h3 {
-        font-size: 16px;
-        margin-bottom: 15px;
-        color: #333;
-    }
-    
-    .info-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .info-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 12px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        transition: all 0.3s;
-    }
-    
-    .info-item:hover {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        transform: translateX(5px);
-    }
-    
-    .info-icon {
-        font-size: 24px;
-    }
-    
-    .info-content {
-        flex: 1;
-    }
-    
-    .info-content strong {
-        display: block;
-        font-size: 13px;
-        color: #999;
-        margin-bottom: 3px;
-    }
-    
-    .info-content p {
-        font-size: 15px;
-        color: #333;
-        margin: 0;
-    }
-    
-    /* ===== STATISTIQUES ===== */
-    .stats-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        grid-template-columns: 1fr 320px; /* Colonne principale large + Colonne Amis */
+        gap: 25px;
+        grid-template-areas: 
+            "profil sidebar"
+            "messages sidebar";
     }
-    
-    .stat-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        border-radius: 8px;
-        transition: all 0.3s;
-    }
-    
-    .stat-box:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-    }
-    
-    .stat-number {
-        font-size: 32px;
-        font-weight: bold;
-        color: #667eea;
-    }
-    
-    .stat-label {
-        font-size: 14px;
-        color: #666;
-    }
-    
-    /* ===== MESSAGES ===== */
-    .messages-section {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .messages-section h3 {
-        font-size: 18px;
+
+    .sidebar-left { grid-area: profil; }
+    .content-center { grid-area: messages; }
+    .sidebar-right { grid-area: sidebar; }
+
+    /* CARTES GÉNÉRALES */
+    .profile-card, .profile-info-card, .profile-stats-card, 
+    .friends-section-card, .mutual-friends-card, .messages-section, .message-card {
+        background: var(--glass);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        backdrop-filter: blur(20px);
+        color: var(--ink);
+        padding: 24px;
         margin-bottom: 20px;
-        color: #333;
     }
-    
-    .message-card {
-        border: 1px solid #e0e0e0;
-        padding: 20px;
-        margin-bottom: 15px;
-        border-radius: 12px;
-        transition: all 0.3s;
-    }
-    
-    .message-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
-    }
-    
-    .message-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 15px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .message-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    }
-    
-    .message-author-info {
-        flex: 1;
-    }
-    
-    .message-author-info strong {
-        display: block;
-        font-size: 15px;
-        color: #333;
-        margin-bottom: 3px;
-    }
-    
-    .message-meta {
-        font-size: 13px;
-        color: #999;
-    }
-    
-    .message-content {
-        font-size: 15px;
-        line-height: 1.6;
-        color: #333;
-        margin-bottom: 15px;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
-    
-    .message-actions {
-        display: flex;
-        gap: 10px;
-        padding-top: 12px;
-        border-top: 1px solid #f0f0f0;
-    }
-    
-    .message-action-btn {
-        flex: 1;
-        padding: 8px 12px;
+
+    /* Single-card container for profil + infos + stats */
+    .profile-card { margin-bottom: 20px; }
+    .profile-details-row { margin-top: 18px; }
+    .profile-info-card, .profile-stats-card {
         background: transparent;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        font-size: 14px;
-        color: #666;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .message-action-btn:hover {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-color: transparent;
-        transform: translateY(-2px);
-    }
-    
-    .no-messages {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-    
-    /* ===== AMIS ===== */
-    .friends-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        list-style: none;
-        padding: 0;
+        border: 0;
+        padding: 8px 12px;
         margin: 0;
     }
-    
-    .friend-card {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 12px;
-        text-align: center;
-        transition: all 0.3s;
+    .profile-info-card h3, .profile-stats-card h3 { margin-bottom: 14px; }
+
+    /* --- SECTION PROFIL ÉLARGIE --- */
+    .profile-cover {
+        height: 160px;
+        background: linear-gradient(135deg, var(--accent-glow), #183858);
+        border-radius: 14px;
+        margin: -24px -24px 20px -24px;
     }
-    
-    .friend-card:hover {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        transform: translateY(-2px);
-    }
-    
-    .friend-card a {
-        text-decoration: none;
-    }
-    
-    .friend-avatar-small {
-        width: 60px;
-        height: 60px;
+
+    .profile-avatar-large {
+        width: 120px; height: 120px;
+        background: var(--accent);
+        margin: -80px 0 15px 0;
+        margin-left: 16px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        font-weight: bold;
-        margin: 0 auto 8px;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 45px; font-weight: 800; color: var(--bg-body);
+        border: 6px solid var(--bg-body);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
+
+    .profile-name-large { text-align: left; font-size: 30px; margin-top: -24px; margin-bottom: 5px; padding-left: 16px; }
+    .profile-type { text-align: center; color: var(--accent); font-weight: 600; margin-bottom: 20px; }
+    .profile-actions { display: flex; justify-content: center; gap: 12px; }
+
+    /* Détails horizontaux */
+    .profile-details-row { display: grid; grid-template-columns: 3fr 0.8fr; gap: 20px; }
+    .info-grid-horizontal { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .info-item-box { background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .info-item-box strong { font-size: 11px; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+    .info-item-box p { margin: 0; color: var(--ink); }
+
+    /* Statistiques */
+    .stats-mini-grid { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+    .stat-pill { text-align: center; background: rgba(50, 199, 194, 0.05); padding: 12px; border-radius: 14px; border: 1px solid var(--line); }
+    .stat-val { display: block; font-size: 22px; font-weight: bold; color: #f0c75e; }
+    .stat-lab { font-size: 11px; color: var(--muted); }
+
+    /* --- SECTION AMIS (SIDEBAR DROITE) --- */
+    .card-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .count-badge { background: var(--accent); color: var(--bg-body); padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
     
-    .friend-name-small {
-        display: block;
-        font-size: 13px;
-        color: #333;
-        font-weight: 500;
+    .friends-grid-modern { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; list-style: none; padding: 0; }
+    .friend-card-mini a { text-decoration: none; display: flex; flex-direction: column; align-items: center; }
+    .friend-avatar-sq { 
+        width: 60px; height: 60px; 
+        background: linear-gradient(135deg, var(--line), rgba(255,255,255,0.05));
+        border-radius: 16px; 
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold; color: var(--accent);
+        border: 1px solid var(--line);
+        margin-bottom: 6px;
+        transition: 0.3s;
     }
-    
-    .no-friends-text,
-    .no-mutual-text {
-        text-align: center;
-        color: #999;
-        font-size: 14px;
-        padding: 20px;
-    }
-    
-    /* Amis en commun */
-    .mutual-friends-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .mutual-friend-item {
-        padding: 10px;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        transition: all 0.3s;
-    }
-    
-    .mutual-friend-item:hover {
-        background: #f8f9fa;
-        transform: translateX(5px);
-    }
-    
-    .mutual-friend-item a {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        text-decoration: none;
-        color: #333;
-    }
-    
-    .mutual-friend-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        font-weight: bold;
-    }
-    
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 1200px) {
-        .main-content {
-            grid-template-columns: 1fr;
-        }
-        
-        .sidebar-right {
-            display: none;
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .navbar-content {
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .nav-links {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .friends-grid {
-            grid-template-columns: 1fr;
-        }
+    .friend-card-mini:hover .friend-avatar-sq { transform: translateY(-4px); border-color: var(--accent); background: var(--glass-hover); }
+    .friend-name-text { font-size: 11px; color: var(--muted); text-align: center; max-width: 60px; overflow: hidden; text-overflow: ellipsis; }
+
+    /* --- SECTION MESSAGES --- */
+    .message-card { background: rgba(255,255,255,0.03); border-radius: 16px; transition: 0.3s; }
+    .message-card:hover { border-color: var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+    .message-header { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; }
+    .message-avatar { width: 45px; height: 45px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--bg-body); font-weight: bold; }
+    .message-author-info strong { display: block; font-size: 15px; }
+    .message-meta { font-size: 12px; color: var(--muted); }
+    .message-content { line-height: 1.6; margin-bottom: 0; color: var(--ink); }
+
+    /* BOUTONS GENERAUX */
+    .btn { padding: 12px 24px; border-radius: 30px; font-weight: bold; text-decoration: none; font-size: 14px; transition: 0.3s; }
+    .btn-primary { background: var(--accent); color: var(--bg-body); box-shadow: 0 4px 15px var(--accent-glow); }
+    .btn-outline { border: 1px solid var(--accent); color: var(--accent); }
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+        .main-content { grid-template-columns: 1fr; grid-template-areas: "profil" "messages" "sidebar"; }
+        .profile-details-row { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}

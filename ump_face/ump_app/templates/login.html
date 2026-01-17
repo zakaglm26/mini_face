@@ -1,42 +1,10 @@
-
-
-{% block title %}Connexion - Mon Face{% endblock %}
-
-{% block bodyId %}loginPage{% endblock %}
-
+﻿
 {% block contenu %}
 <div class="login-wrapper">
-    <!-- Colonne gauche : Branding -->
-    <div class="brand-section">
-        <div class="brand-content">
-            <div class="brand-logo">
-                <span class="logo-icon">📘</span>
-                <h1 class="brand-name">MonFace</h1>
-            </div>
-            <p class="brand-tagline">
-                Connectez-vous avec vos camarades et collègues universitaires
-            </p>
-            <div class="brand-features">
-                <div class="feature-item">
-                    <span class="feature-icon">🎓</span>
-                    <span class="feature-text">Réseau étudiant</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">💼</span>
-                    <span class="feature-text">Espace professionnel</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">💬</span>
-                    <span class="feature-text">Partage et communication</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Colonne droite : Formulaire de connexion -->
+    <!-- Formulaire de connexion -->
     <div class="form-section">
-        <div class="form-container">
-            <div class="form-header">
+            <div class="form-container">
+                <div class="form-header">
                 <h2>Connexion</h2>
                 <p class="form-subtitle">Bienvenue ! Connectez-vous pour continuer</p>
             </div>
@@ -44,8 +12,7 @@
             <!-- Afficher les erreurs globales -->
             {% if form.non_field_errors %}
                 <div class="alert alert-error">
-                    <span class="alert-icon">⚠️</span>
-                    <div class="alert-content">
+<div class="alert-content">
                         {{ form.non_field_errors }}
                     </div>
                 </div>
@@ -58,8 +25,7 @@
                 <!-- Champ Email -->
                 <div class="form-group">
                     <label for="id_email" class="form-label">
-                        <span class="label-icon">📧</span>
-                        {{ form.email.label }}
+                      {{ form.email.label }}
                     </label>
                     {{ form.email }}
                     {% if form.email.errors %}
@@ -70,12 +36,16 @@
                 </div>
                 
                 <!-- Champ Mot de passe -->
-                <div class="form-group">
+                <div class="form-group password-group">
                     <label for="id_password" class="form-label">
-                        <span class="label-icon">🔒</span>
                         {{ form.password.label }}
                     </label>
-                    {{ form.password }}
+                    <div class="password-field">
+                        {{ form.password }}
+                        <button type="button" class="toggle-password" aria-label="Afficher le mot de passe" data-target="id_password">
+                            Show
+                        </button>
+                    </div>
                     {% if form.password.errors %}
                         <div class="field-error">
                             {{ form.password.errors.0 }}
@@ -83,23 +53,16 @@
                     {% endif %}
                 </div>
                 
-                <!-- Options supplémentaires -->
-                <div class="form-options">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="remember_me">
-                        <span>Se souvenir de moi</span>
-                    </label>
-                    <a href="#" class="link-forgot">Mot de passe oublié ?</a>
-                </div>
+                <!-- Options supplÃ©mentaires -->
+                <div class="form-options"></div>
                 
                 <!-- Bouton de connexion -->
                 <button type="submit" class="btn btn-login">
-                    <span class="btn-icon">🔓</span>
                     <span>Se connecter</span>
                 </button>
             </form>
             
-            <!-- Séparateur -->
+            <!-- SÃ©parateur -->
             <div class="divider">
                 <span class="divider-text">ou</span>
             </div>
@@ -108,14 +71,13 @@
             <div class="register-section">
                 <p class="register-text">Vous n'avez pas de compte ?</p>
                 <a href="{% url 'register' %}" class="btn btn-register">
-                    <span class="btn-icon">✨</span>
-                    <span>Créer un compte</span>
+                    <span>Creer un compte</span>
                 </a>
             </div>
             
             <!-- Footer -->
             <div class="form-footer">
-                <p>MonFace © 2025 - Plateforme universitaire</p>
+                <p> UMP-Face 2025 - Plateforme universitaire</p>
             </div>
         </div>
     </div>
@@ -129,7 +91,7 @@
         margin: 0;
         padding: 0;
         min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%), radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%), linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -137,105 +99,30 @@
     
     .login-wrapper {
         width: 100%;
-        max-width: 1200px;
-        margin: 40px 20px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        background: white;
+        max-width: 520px;
+        margin: 40px auto;
+        display: flex;
+        justify-content: center;
+        background: rgba(12, 22, 36, 0.9);
         border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 24px 70px rgba(2, 8, 14, 0.55);
     }
-    
-    /* ===== SECTION BRANDING (Gauche) ===== */
-    .brand-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 60px 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-    }
-    
-    .brand-content {
-        max-width: 400px;
-    }
-    
-    .brand-logo {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 30px;
-    }
-    
-    .logo-icon {
-        font-size: 64px;
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    .brand-name {
-        font-size: 48px;
-        font-weight: 800;
-        margin: 0;
-        color: white;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
-    
-    .brand-tagline {
-        font-size: 18px;
-        line-height: 1.6;
-        margin-bottom: 40px;
-        opacity: 0.95;
-    }
-    
-    .brand-features {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .feature-item {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 15px 20px;
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s;
-    }
-    
-    .feature-item:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateX(5px);
-    }
-    
-    .feature-icon {
-        font-size: 32px;
-    }
-    
-    .feature-text {
-        font-size: 16px;
-        font-weight: 600;
-    }
-    
-    /* ===== SECTION FORMULAIRE (Droite) ===== */
+    /* ===== SECTION FORMULAIRE ===== */
     .form-section {
         padding: 60px 50px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #f8f9fa;
+        background: transparent;
+        width: 100%;
     }
     
     .form-container {
         width: 100%;
-        max-width: 400px;
+        max-width: 420px;
+        margin: 0 auto;
+        text-align: center;
     }
     
     .form-header {
@@ -245,14 +132,14 @@
     
     .form-header h2 {
         font-size: 32px;
-        color: #333;
+        color: #e6f1f3;
         margin: 0 0 10px 0;
         font-weight: 700;
     }
     
     .form-subtitle {
         font-size: 15px;
-        color: #666;
+        color: rgba(230, 241, 243, 0.7);
         margin: 0;
     }
     
@@ -296,6 +183,7 @@
     /* Formulaire */
     .login-form {
         margin-bottom: 30px;
+        text-align: left;
     }
     
     .form-group {
@@ -307,7 +195,7 @@
         align-items: center;
         gap: 8px;
         font-weight: 600;
-        color: #333;
+        color: #e6f1f3;
         margin-bottom: 10px;
         font-size: 15px;
     }
@@ -321,17 +209,52 @@
     .form-group input[type="text"] {
         width: 100%;
         padding: 14px 18px;
-        border: 2px solid #e0e0e0;
+        border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 10px;
         font-size: 15px;
         transition: all 0.3s;
-        background: white;
+        background: rgba(12, 22, 36, 0.9);
+    }
+
+    .password-field {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-field input[type="password"],
+    .password-field input[type="text"] {
+        padding-right: 90px;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(18, 34, 56, 0.95);
+        border: 1px solid rgba(121, 167, 227, 0.55);
+        color: #e6f1f3;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 3;
+        box-shadow: 0 6px 14px rgba(9, 18, 30, 0.45);
+    }
+
+    .toggle-password:hover {
+        background: rgba(121, 167, 227, 0.25);
+        border-color: rgba(121, 167, 227, 0.75);
     }
     
     .form-group input:focus {
         outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        border-color: rgba(56, 109, 166, 0.8);
+        box-shadow: 0 0 0 4px rgba(56, 109, 166, 0.2);
     }
     
     .field-error {
@@ -344,7 +267,7 @@
     }
     
     .field-error::before {
-        content: "⚠️";
+        content: "âš ï¸";
     }
     
     /* Options */
@@ -361,7 +284,7 @@
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        color: #666;
+        color: rgba(230, 241, 243, 0.7);
     }
     
     .checkbox-label input[type="checkbox"] {
@@ -369,20 +292,7 @@
         height: 18px;
         cursor: pointer;
     }
-    
-    .link-forgot {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-    
-    .link-forgot:hover {
-        color: #764ba2;
-        text-decoration: underline;
-    }
-    
-    /* Boutons */
+/* Boutons */
     .btn {
         width: 100%;
         padding: 15px 25px;
@@ -404,14 +314,17 @@
     }
     
     .btn-login {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%), radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%), linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
         color: white;
         margin-bottom: 20px;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
     }
     
     .btn-login:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 10px 24px rgba(31, 75, 136, 0.5);
     }
     
     .btn-login:active {
@@ -419,19 +332,22 @@
     }
     
     .btn-register {
-        background: white;
-        color: #667eea;
-        border: 2px solid #667eea;
+        background: rgba(12, 22, 36, 0.9);
+        color: #79a7e3;
+        border: 1px solid rgba(121, 167, 227, 0.6);
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
     }
     
     .btn-register:hover {
-        background: #667eea;
+        background: rgba(121, 167, 227, 0.2);
         color: white;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 10px 24px rgba(31, 75, 136, 0.35);
     }
     
-    /* Séparateur */
+    /* SÃ©parateur */
     .divider {
         position: relative;
         text-align: center;
@@ -445,14 +361,14 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: #ddd;
+        background: rgba(255, 255, 255, 0.15);
     }
     
     .divider-text {
         position: relative;
-        background: #f8f9fa;
+        background: transparent;
         padding: 0 20px;
-        color: #999;
+        color: rgba(230, 241, 243, 0.6);
         font-size: 14px;
         font-weight: 600;
     }
@@ -464,7 +380,7 @@
     
     .register-text {
         font-size: 15px;
-        color: #666;
+        color: rgba(230, 241, 243, 0.7);
         margin-bottom: 15px;
     }
     
@@ -473,12 +389,12 @@
         text-align: center;
         margin-top: 40px;
         padding-top: 30px;
-        border-top: 1px solid #e0e0e0;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
     }
     
     .form-footer p {
         font-size: 13px;
-        color: #999;
+        color: rgba(230, 241, 243, 0.6);
         margin: 0;
     }
     
@@ -521,4 +437,22 @@
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.querySelector('.toggle-password');
+        if (!toggle) return;
+
+        toggle.addEventListener('click', () => {
+            const targetId = toggle.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            toggle.textContent = isPassword ? 'Hide' : 'Show';
+            toggle.setAttribute('aria-label', isPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+        });
+    });
+</script>
 {% endblock %}

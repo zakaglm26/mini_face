@@ -1,42 +1,7 @@
-
-
+{% extends "base.html" %}
 
 {% block contenu %}
-<div class="welcome-container">
-    <!-- ========================================
-         HEADER / NAVIGATION
-         ======================================== -->
-    <header class="navbar">
-        <div class="navbar-content">
-            <div class="logo">
-                <span class="logo-icon">📘</span>
-                <span class="logo-text">MonFace</span>
-            </div>
-            
-            <nav class="nav-links">
-                <a href="{% url 'welcome' %}" class="nav-link active">
-                    Accueil
-                </a>
-                <!-- MODIFIÉ : Lien vers mon profil -->
-                <a href="{% url 'view_profile' logged_user.id %}" class="nav-link">
-                    Mon Profil
-                </a>
-                <a href="{% url 'search_users' %}" class="nav-link">Amis</a>
-                
-                <a href="#" class="nav-link">
-                    Messages
-                </a>
-            </nav>
-            
-            <div class="user-menu">
-                <span class="user-name">{{ logged_user.prenom }} {{ logged_user.nom }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">
-                    Déconnexion
-                </a>
-            </div>
-        </div>
-    </header>
-    
+
     <!-- ========================================
          CONTENU PRINCIPAL
          ======================================== -->
@@ -54,7 +19,7 @@
                 
                 {% if logged_user.annee %}
                     <div class="profile-info">
-                        <p class="user-type">🎓 Étudiant</p>
+                        <p class="user-type">Étudiant</p>
                         <p class="user-detail">
                             <strong>Année :</strong> {{ logged_user.annee }}
                         </p>
@@ -67,7 +32,7 @@
                     </div>
                 {% else %}
                     <div class="profile-info">
-                        <p class="user-type">💼 Employé</p>
+                        <p class="user-type">Employé</p>
                         <p class="user-detail">
                             <strong>Poste :</strong> {{ logged_user.job.titre }}
                         </p>
@@ -85,11 +50,11 @@
                 
                 <div class="profile-contact">
                     <p class="user-detail">
-                        <strong>📧 Email :</strong><br>
+                        <strong>Email :</strong><br>
                         {{ logged_user.email }}
                     </p>
                     <p class="user-detail">
-                        <strong>📱 Téléphone :</strong><br>
+                        <strong>Téléphone :</strong><br>
                         {{ logged_user.tlf }}
                     </p>
                 </div>
@@ -97,18 +62,111 @@
                 <div class="profile-actions">
                     <!-- MODIFIÉ : Lien vers mon profil -->
                     <a href="{% url 'view_profile' logged_user.id %}" class="btn-edit-profile">
-                        👤 Voir mon profil
+                        Voir mon profil
                     </a>
                 </div>
             </div>
+        </aside>
+        
+        <!-- Contenu central : Fil d'actualité -->
+        <main class="content-center">
+            <div class="welcome-message">
+                <h1>Bienvenue, {{ logged_user.prenom }} !</h1>
+                <p class="welcome-subtitle">
+                    {% if logged_user.annee %}
+                        Vous êtes étudiant en {{ logged_user.cursus.titre }}, année {{ logged_user.annee }}.
+                    {% else %}
+                        Vous êtes {{ logged_user.job.titre }} à {{ logged_user.faculty.nom }}.
+                    {% endif %}
+                </p>
+            </div>
             
-            <!-- Amis -->
+            <!-- Formulaire de publication -->
+            <div class="post-form-card">
+                <h3>Publier un message</h3>
+                
+                <!-- Afficher les erreurs du formulaire -->
+                {% if form.errors %}
+                    <div class="form-errors">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <p>⚠️ {{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <form action="{% url 'welcome' %}" method="post" class="post-form">
+                    {% csrf_token %}
+                    
+                    <!-- Utiliser le formulaire Django -->
+                    {{ form.contenu }}
+                    <p class="post-hint">Partagez une actu ou une pensée (restez respectueux).</p>
+                    
+                    <div class="post-form-actions">
+                        <button type="submit" class="btn-publish">
+                            Publier
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Liste des messages -->
+            <div class="messages-feed">
+                <h3>Fil d'actualité</h3>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message-card">
+                            <div class="message-header">
+                                <!-- MODIFIÉ : Avatar cliquable -->
+                                <a href="{% url 'view_profile' message.auteur.id %}" style="text-decoration:none;">
+                                    <div class="message-avatar">
+                                        {{ message.auteur.prenom.0 }}{{ message.auteur.nom.0 }}
+                                    </div>
+                                </a>
+                                <div class="message-author-info">
+                                    <!-- MODIFIÉ : Nom cliquable -->
+                                    <strong>
+                                        <a href="{% url 'view_profile' message.auteur.id %}" style="color: var(--ink); text-decoration:none;">
+                                            {{ message.auteur.prenom }} {{ message.auteur.nom }}
+                                        </a>
+                                    </strong>
+                                    <span class="message-meta">
+                                        {% if message.auteur.annee %}
+                                            Étudiant
+                                        {% else %}
+                                            {{ message.auteur.job.titre }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="message-content">
+                                {{ message.contenu|linebreaks }}
+                            </div>
+                            <div class="message-date">
+                                {{ message.date_publication|date:"d/m/Y à H:i" }}
+                            </div>
+                            
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-messages">
+                        <p>Aucun message pour le moment.</p>
+                        <p>Publiez votre premier message ou ajoutez des amis !</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+        
+        <!-- Sidebar droite : Amis et stats -->
+        <aside class="sidebar-right">
             <div class="friends-widget">
-                <h3>👥 Mes amis ({{ logged_user.amis.count }})</h3>
+                <h3>Mes amis ({{ logged_user.amis.count }})</h3>
                 {% if logged_user.amis.all %}
                     <ul class="friends-list">
                         {% for ami in logged_user.amis.all %}
-                            <!-- MODIFIÉ : Lien vers le profil de l'ami -->
                             <li class="friend-item">
                                 <a href="{% url 'view_profile' ami.id %}" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; width:100%;">
                                     <div class="friend-avatar">
@@ -126,149 +184,20 @@
                     <a href="{% url 'search_users' %}" class="btn-add-friend">➕ Ajouter des amis</a>
                 {% endif %}
             </div>
-        </aside>
-        
-        <!-- Contenu central : Fil d'actualité -->
-        <main class="content-center">
-            <div class="welcome-message">
-                <h1>👋 Bienvenue, {{ logged_user.prenom }} !</h1>
-                <p class="welcome-subtitle">
-                    {% if logged_user.annee %}
-                        Vous êtes étudiant en {{ logged_user.cursus.titre }}, année {{ logged_user.annee }}.
-                    {% else %}
-                        Vous êtes {{ logged_user.job.titre }} à {{ logged_user.faculty.nom }}.
-                    {% endif %}
-                </p>
-            </div>
-            
-            <!-- Formulaire de publication -->
-            <div class="post-form-card">
-                <h3>✍️ Publier un message</h3>
-                
-                <!-- Afficher les erreurs du formulaire -->
-                {% if form.errors %}
-                    <div class="form-errors">
-                        {% for field, errors in form.errors.items %}
-                            {% for error in errors %}
-                                <p>⚠️ {{ error }}</p>
-                            {% endfor %}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                
-                <form action="{% url 'welcome' %}" method="post">
-                    {% csrf_token %}
-                    
-                    <!-- Utiliser le formulaire Django -->
-                    {{ form.contenu }}
-                    
-                    <button type="submit" class="btn-publish">
-                        📤 Publier
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Liste des messages -->
-            <div class="messages-feed">
-                <h3>📰 Fil d'actualité</h3>
-                
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="message-card">
-                            <div class="message-header">
-                                <!-- MODIFIÉ : Avatar cliquable -->
-                                <a href="{% url 'view_profile' message.auteur.id %}" style="text-decoration:none;">
-                                    <div class="message-avatar">
-                                        {{ message.auteur.prenom.0 }}{{ message.auteur.nom.0 }}
-                                    </div>
-                                </a>
-                                <div class="message-author-info">
-                                    <!-- MODIFIÉ : Nom cliquable -->
-                                    <strong>
-                                        <a href="{% url 'view_profile' message.auteur.id %}" style="color:#333; text-decoration:none;">
-                                            {{ message.auteur.prenom }} {{ message.auteur.nom }}
-                                        </a>
-                                    </strong>
-                                    <span class="message-meta">
-                                        {% if message.auteur.annee %}
-                                            🎓 Étudiant
-                                        {% else %}
-                                            💼 {{ message.auteur.job.titre }}
-                                        {% endif %}
-                                        · {{ message.date_publication|date:"d/m/Y à H:i" }}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="message-content">
-                                {{ message.contenu|linebreaks }}
-                            </div>
-                            
-                            <div class="message-actions">
-                                <button class="message-action-btn">
-                                    ❤️ J'aime
-                                </button>
-                                <button class="message-action-btn">
-                                    💬 Commenter
-                                </button>
-                                <button class="message-action-btn">
-                                    🔗 Partager
-                                </button>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="no-messages">
-                        <p>😊 Aucun message pour le moment.</p>
-                        <p>Publiez votre premier message ou ajoutez des amis !</p>
-                    </div>
-                {% endif %}
-            </div>
-        </main>
-        
-        <!-- Sidebar droite : Suggestions -->
-        <aside class="sidebar-right">
-            <div class="suggestions-widget">
-                <h3>💡 Suggestions</h3>
-                <ul class="suggestions-list">
-                    <li>
-                        <span class="suggestion-icon">✏️</span>
-                        <div>
-                            <strong>Complétez votre profil</strong>
-                            <p>Ajoutez une photo de profil</p>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="suggestion-icon">👥</span>
-                        <div>
-                            <strong>Trouvez des amis</strong>
-                            <p>Connectez-vous avec vos camarades</p>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="suggestion-icon">💬</span>
-                        <div>
-                            <strong>Publiez un message</strong>
-                            <p>Partagez vos pensées</p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            
+
             <div class="stats-widget">
-                <h3>📊 Statistiques</h3>
-                <div class="stat-item">
-                    <span class="stat-number">{{ logged_user.amis.count }}</span>
-                    <span class="stat-label">Amis</span>
+                <h3>Statistiques</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ logged_user.amis.count }}</span>
+                        <span class="stat-label">Amis</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ messages|length }}</span>
+                        <span class="stat-label">Messages</span>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">{{ messages|length }}</span>
-                    <span class="stat-label">Messages</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">0</span>
-                    <span class="stat-label">Interactions</span>
-                </div>
+
             </div>
         </aside>
     </div>
@@ -281,24 +210,25 @@
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Sora:wght@300;400;500;600&display=swap');
 
     :root {
-        --bg: #f5f1ea;
-        --bg-accent: #e7eef2;
-        --ink: #0f1a2b;
-        --muted: #5b6778;
-        --card: #ffffff;
-        --line: #e6e0d7;
-        --nav: #0f2b46;
-        --accent: #1f7a7a;
-        --accent-2: #f0c75e;
-        --shadow: 0 10px 30px rgba(15, 26, 43, 0.08);
-        --shadow-hover: 0 14px 40px rgba(15, 26, 43, 0.12);
+        --bg: #0a1424; /* Fond principal */
+        --bg-accent: #0c1d31;
+        --ink: #e6f1f3; /* Texte principal */
+        --muted: #9bb3c0;
+        --card: #111c2e;
+        --line: #1f2c44;
+        --nav: #0f2238;
+        --accent: #386da6; /* Accent bleu */
+        --accent-2: #79a7e3; /* Lien/inscription */
+        --error: #e74c3c;
+        --shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+        --shadow-hover: 0 16px 38px rgba(0, 0, 0, 0.34);
         --radius: 16px;
     }
 
     #welcomePage {
         background:
-            radial-gradient(1200px 500px at -10% -20%, rgba(31, 122, 122, 0.18), transparent 60%),
-            radial-gradient(900px 400px at 110% -10%, rgba(240, 199, 94, 0.18), transparent 60%),
+            radial-gradient(1200px 500px at -10% -20%, rgba(56, 109, 166, 0.18), transparent 60%),
+            radial-gradient(900px 400px at 110% -10%, rgba(121, 167, 227, 0.15), transparent 60%),
             linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
         min-height: 100vh;
         padding: 0;
@@ -313,92 +243,7 @@
         padding: 0;
     }
     
-    /* ===== NAVBAR ===== */
-    .navbar {
-        background: linear-gradient(135deg, #0f2b46 0%, #153a5c 100%);
-        box-shadow: 0 8px 30px rgba(15, 43, 70, 0.25);
-        padding: 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
     
-    .navbar-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #fef7e3;
-        font-size: 24px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        font-family: "Playfair Display", "Times New Roman", serif;
-    }
-    
-    .logo-icon {
-        font-size: 32px;
-    }
-    
-    .nav-links {
-        display: flex;
-        gap: 30px;
-    }
-    
-    .nav-link {
-        color: #fef7e3;
-        text-decoration: none;
-        padding: 8px 15px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        font-weight: 500;
-        border: 1px solid transparent;
-    }
-    
-    .nav-link:hover {
-        background-color: rgba(240, 199, 94, 0.18);
-        border-color: rgba(240, 199, 94, 0.35);
-        transform: translateY(-2px);
-    }
-    
-    .nav-link.active {
-        background-color: rgba(240, 199, 94, 0.25);
-        border-color: rgba(240, 199, 94, 0.45);
-    }
-    
-    .user-menu {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: #fef7e3;
-    }
-    
-    .user-name {
-        font-weight: 600;
-    }
-    
-    .btn-logout {
-        background-color: rgba(240, 199, 94, 0.2);
-        color: #fef7e3;
-        padding: 8px 15px;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.3s;
-        font-weight: 500;
-        border: 1px solid rgba(240, 199, 94, 0.35);
-    }
-    
-    .btn-logout:hover {
-        background-color: rgba(240, 199, 94, 0.35);
-        transform: translateY(-2px);
-    }
     
     /* ===== LAYOUT PRINCIPAL ===== */
     .main-content {
@@ -415,18 +260,22 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        position: sticky;
+        top: 20px;
+        align-self: start;
     }
     
     .profile-card,
     .friends-widget,
     .suggestions-widget,
     .stats-widget {
-        background: var(--card);
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.12), rgba(17, 28, 46, 0.92));
         border-radius: var(--radius);
         padding: 20px;
         box-shadow: var(--shadow);
         transition: all 0.3s;
         border: 1px solid var(--line);
+        color: var(--ink);
     }
     
     .profile-card:hover,
@@ -441,21 +290,22 @@
         width: 100px;
         height: 100px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
-        color: #fef7e3;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 36px;
-        font-weight: bold;
-        margin: 0 auto 15px;
-        box-shadow: 0 10px 20px rgba(15, 43, 70, 0.25);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: bold;
+            border: 1px solid var(--line);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
         transition: all 0.3s;
+        margin: 0 auto 12px;
     }
     
     .profile-avatar:hover {
         transform: scale(1.05);
-        box-shadow: 0 14px 30px rgba(15, 43, 70, 0.3);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
     }
     
     .profile-name {
@@ -499,8 +349,8 @@
     .btn-edit-profile {
         display: block;
         text-align: center;
-        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
-        color: #fef7e3;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+        color: var(--ink);
         padding: 10px;
         border-radius: 6px;
         text-decoration: none;
@@ -520,43 +370,76 @@
         color: var(--ink);
     }
     
+    .friends-widget {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 360px;
+        overflow: hidden;
+    }
+
     .friends-list {
         list-style: none;
         padding: 0;
         margin: 0;
+        overflow-y: auto;
+        max-height: 290px;
+        padding-right: 6px;
+        margin-right: -2px;
     }
+
+    .friends-list::-webkit-scrollbar { width: 6px; }
+    .friends-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; }
+    .friends-list::-webkit-scrollbar-track { background: transparent; }
     
     .friend-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 8px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        margin-bottom: 5px;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        box-shadow: var(--shadow);
+        transition: all 0.25s ease;
+        margin-bottom: 8px;
     }
     
     .friend-item:hover {
-        background-color: rgba(31, 122, 122, 0.08);
-        transform: translateX(5px);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-3px);
+        border-color: var(--accent);
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.12), rgba(17, 28, 46, 0.9));
     }
     
     .friend-avatar {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
-        color: #fef7e3;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+        color: var(--ink);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 14px;
         font-weight: bold;
+        transition: all 0.25s ease;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
     }
     
+    .friend-item:hover .friend-avatar {
+        transform: scale(1.06);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
+    }
+
     .friend-name {
         font-size: 14px;
         color: var(--ink);
+        transition: color 0.25s ease;
+    }
+
+    .friend-item:hover .friend-name {
+        color: var(--accent-2);
     }
     
     .no-friends {
@@ -570,7 +453,7 @@
         display: block;
         text-align: center;
         background-color: var(--accent);
-        color: #fef7e3;
+        color: var(--ink);
         padding: 8px;
         border-radius: 6px;
         text-decoration: none;
@@ -579,7 +462,7 @@
     }
     
     .btn-add-friend:hover {
-        background-color: #175f5f;
+        background-color: var(--accent-2);
         transform: translateY(-2px);
     }
     
@@ -588,16 +471,26 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        padding-right: 6px;
     }
+
+    .content-center::-webkit-scrollbar { width: 6px; }
+    .content-center::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; }
+    .content-center::-webkit-scrollbar-track { background: transparent; }
     
     .welcome-message {
-        background: var(--card);
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.12), rgba(17, 28, 46, 0.92));
         padding: 30px;
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         text-align: center;
         transition: all 0.3s;
         border: 1px solid var(--line);
+        overflow: hidden;
+        max-height: 320px;
+        animation: welcomeFade 6s ease-in-out forwards;
     }
     
     .welcome-message:hover {
@@ -616,15 +509,25 @@
         font-size: 16px;
         color: var(--muted);
     }
+
+    @keyframes welcomeFade {
+        0% { opacity: 1; transform: translateY(0); max-height: 320px; }
+        70% { opacity: 1; transform: translateY(0); max-height: 320px; }
+        90% { opacity: 0; transform: translateY(-6px); max-height: 320px; }
+        100% { opacity: 0; transform: translateY(-6px); max-height: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; }
+    }
     
     .post-form-card {
-        background: var(--card);
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.12), rgba(17, 28, 46, 0.92));
         padding: 20px;
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         transition: all 0.3s;
         border: 1px solid var(--line);
     }
+
+    .post-form { display: flex; flex-direction: column; gap: 12px; }
+    .post-form-actions { display: flex; justify-content: flex-end; }
     
     .post-form-card:hover {
         box-shadow: var(--shadow-hover);
@@ -635,12 +538,18 @@
         margin-bottom: 15px;
         color: var(--ink);
     }
+
+    .post-hint {
+        margin: -4px 0 6px 0;
+        font-size: 12px;
+        color: var(--muted);
+    }
     
     /* Erreurs du formulaire */
     .form-errors {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
-        border-left: 4px solid #ef4444;
-        color: #ef4444;
+        background: linear-gradient(135deg, rgba(231, 76, 60, 0.12) 0%, rgba(121, 167, 227, 0.08) 100%);
+        border-left: 4px solid var(--error);
+        color: var(--error);
         padding: 12px 16px;
         border-radius: 8px;
         margin-bottom: 15px;
@@ -658,22 +567,26 @@
         border: 2px solid var(--line);
         border-radius: 8px;
         font-size: 15px;
-        resize: vertical;
+        resize: none;
+        min-height: 140px;
+        max-height: 140px;
         margin-bottom: 10px;
         font-family: inherit;
         transition: all 0.3s;
-        background-color: #fbfaf8;
+        background-color: #1b283a;
+        color: var(--ink);
     }
-    
+
     .post-textarea:focus {
         outline: none;
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(31, 122, 122, 0.12);
+        box-shadow: 0 0 0 3px rgba(121, 167, 227, 0.18);
+        background-color: #1f3047;
     }
     
     .btn-publish {
-        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
-        color: #fef7e3;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+        color: var(--ink);
         padding: 10px 20px;
         border: none;
         border-radius: 6px;
@@ -685,7 +598,7 @@
     
     .btn-publish:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(15, 43, 70, 0.25);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
     }
     
     .btn-publish:active {
@@ -694,40 +607,43 @@
     
     /* Messages Feed */
     .messages-feed {
-        background: var(--card);
-        padding: 20px;
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.12), rgba(17, 28, 46, 0.92));
+        padding: 14px;
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         border: 1px solid var(--line);
     }
     
     .messages-feed h3 {
-        font-size: 18px;
-        margin-bottom: 15px;
+        font-size: 17px;
+        margin-bottom: 10px;
         color: var(--ink);
     }
     
     /* Carte de message */
     .message-card {
         border: 1px solid var(--line);
-        padding: 20px;
-        margin-bottom: 15px;
+        padding: 12px;
+        margin-bottom: 8px;
         border-radius: var(--radius);
-        background: #ffffff;
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.1), rgba(17, 28, 46, 0.9));
+        box-shadow: var(--shadow);
         transition: all 0.3s;
     }
     
     .message-card:hover {
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow-hover);
         transform: translateY(-3px);
+        border-color: var(--accent);
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.14), rgba(17, 28, 46, 0.9));
     }
     
     .message-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 15px;
-        padding-bottom: 12px;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
         border-bottom: 1px solid var(--line);
     }
     
@@ -735,21 +651,21 @@
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
-        color: #fef7e3;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+        color: var(--ink);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 18px;
         font-weight: bold;
         flex-shrink: 0;
-        box-shadow: 0 6px 14px rgba(15, 43, 70, 0.2);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
         transition: all 0.3s;
     }
     
     .message-avatar:hover {
         transform: scale(1.1);
-        box-shadow: 0 10px 20px rgba(15, 43, 70, 0.3);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     }
     
     .message-author-info {
@@ -772,42 +688,26 @@
         font-size: 13px;
         color: var(--muted);
     }
+
+    .message-date {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        text-align: right;
+    }
     
     .message-content {
-        font-size: 15px;
-        line-height: 1.6;
+        font-size: 13.5px;
+        line-height: 1.55;
         color: var(--ink);
-        margin-bottom: 15px;
+        margin-bottom: 8px;
         white-space: pre-wrap;
         word-wrap: break-word;
     }
+
+    .message-content p { margin: 0; }
     
-    .message-actions {
-        display: flex;
-        gap: 10px;
-        padding-top: 12px;
-        border-top: 1px solid var(--line);
-    }
-    
-    .message-action-btn {
-        flex: 1;
-        padding: 8px 12px;
-        background: transparent;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        font-size: 14px;
-        color: var(--muted);
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .message-action-btn:hover {
-        background: linear-gradient(135deg, #1f7a7a 0%, #0f2b46 100%);
-        color: #fef7e3;
-        border-color: transparent;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(15, 43, 70, 0.2);
-    }
+    /* actions supprimées */
     
     .no-messages {
         text-align: center;
@@ -824,6 +724,11 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        position: sticky;
+        top: 20px;
+        align-self: start;
+        max-height: calc(100vh - 40px);
+        overflow: hidden;
     }
     
     .suggestions-widget h3,
@@ -845,12 +750,13 @@
         padding: 12px;
         border-radius: 8px;
         margin-bottom: 10px;
-        background-color: #f7f4ee;
+        background-color: #121d31;
         transition: all 0.3s;
+        border: 1px solid var(--line);
     }
     
     .suggestions-list li:hover {
-        background: linear-gradient(135deg, rgba(31, 122, 122, 0.12) 0%, rgba(240, 199, 94, 0.12) 100%);
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.18) 0%, rgba(121, 167, 227, 0.16) 100%);
         transform: translateX(5px);
     }
     
@@ -874,32 +780,40 @@
     .stats-widget {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
+        align-items: stretch;
     }
-    
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
     .stat-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 15px;
-        background-color: #f7f4ee;
-        border-radius: 8px;
+        padding: 10px 8px;
+        background-color: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
         transition: all 0.3s;
     }
     
     .stat-item:hover {
-        background: linear-gradient(135deg, rgba(31, 122, 122, 0.12) 0%, rgba(240, 199, 94, 0.12) 100%);
-        transform: scale(1.05);
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.16) 0%, rgba(121, 167, 227, 0.14) 100%);
+        transform: translateY(-2px);
     }
     
     .stat-number {
-        font-size: 32px;
+        font-size: 22px;
         font-weight: bold;
         color: var(--accent);
     }
     
     .stat-label {
-        font-size: 14px;
+        font-size: 12px;
         color: var(--muted);
     }
     
