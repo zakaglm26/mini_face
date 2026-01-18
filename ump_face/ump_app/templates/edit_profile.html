@@ -294,17 +294,27 @@
 </div>
 
 <style>
+    :root {
+        --bg: #0a1424;
+        --bg-accent: #0c1d31;
+        --ink: #e6f1f3;
+        --muted: #9bb3c0;
+        --accent: #386da6;
+        --accent-2: #79a7e3;
+        --line: #1f2c44;
+    }
+
     #editProfilePage {
-        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%),
-                    radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%),
-                    linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
+        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.22), transparent 60%),
+                    radial-gradient(800px 400px at 120% 0%, rgba(121, 167, 227, 0.18), transparent 60%),
+                    linear-gradient(160deg, var(--bg) 0%, var(--bg-accent) 100%);
         min-height: 100vh;
         padding: 40px 20px;
     }
 
     .edit-profile-container {
         max-width: 760px;
-        margin: 0 auto;
+        margin: 2cm auto 0;
     }
 
     .edit-profile-card {
@@ -312,16 +322,16 @@
         border-radius: 18px;
         box-shadow: 0 24px 70px rgba(2, 8, 14, 0.55);
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e6f1f3;
+        border: 1px solid var(--line);
+        color: var(--ink);
     }
 
     .header {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.2), rgba(24, 56, 88, 0.65));
-        color: #e6f1f3;
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.28), rgba(12, 29, 49, 0.9));
+        color: var(--ink);
         padding: 36px 30px;
         text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--line);
     }
 
     .header h1 {
@@ -329,7 +339,7 @@
         margin: 0 0 10px 0;
         border: none;
         padding: 0;
-        color: #e6f1f3;
+        color: var(--ink);
         display: inline-flex;
         align-items: center;
         gap: 10px;
@@ -357,7 +367,7 @@
         font-size: 15px;
         opacity: 0.85;
         margin: 0;
-        color: rgba(230, 241, 243, 0.75);
+        color: var(--muted);
     }
 
     .form-card {
@@ -374,7 +384,7 @@
 
     .form-section {
         padding-bottom: 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--line);
     }
 
     .form-section:last-of-type {
@@ -383,7 +393,7 @@
 
     .form-section h3 {
         font-size: 16px;
-        color: #e6f1f3;
+        color: var(--ink);
         margin-bottom: 16px;
         font-weight: 600;
         display: inline-flex;
@@ -407,7 +417,7 @@
     .form-group label {
         font-size: 14px;
         font-weight: 600;
-        color: #e6f1f3;
+        color: var(--ink);
     }
 
     .form-group input,
@@ -415,39 +425,19 @@
         width: 100%;
         max-width: 320px;
         padding: 12px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid var(--line);
         border-radius: 10px;
         font-size: 14px;
-        background: rgba(9, 16, 26, 0.6);
-        color: #e6f1f3;
+        background: #121d31;
+        color: var(--ink);
         transition: all 0.3s;
-    }
-
-    .form-group textarea {
-        width: 100%;
-        max-width: 100%;
-        min-height: 120px;
-        padding: 12px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 10px;
-        font-size: 14px;
-        background: rgba(9, 16, 26, 0.6);
-        color: #e6f1f3;
-        transition: all 0.3s;
-        line-height: 1.5;
-        resize: vertical;
-    }
-
-    .form-group textarea::placeholder {
-        color: rgba(230, 241, 243, 0.55);
     }
 
     .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .form-group select:focus {
         outline: none;
-        border-color: rgba(50, 199, 194, 0.6);
-        box-shadow: 0 0 0 3px rgba(50, 199, 194, 0.18);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(121, 167, 227, 0.18);
     }
 
     .field-errors {
@@ -463,12 +453,12 @@
 
     .help-text {
         font-size: 13px;
-        color: rgba(230, 241, 243, 0.6);
+        color: var(--muted);
         margin-top: 10px;
         padding: 12px;
         background: rgba(255, 255, 255, 0.04);
         border-radius: 8px;
-        border-left: 3px solid rgba(50, 199, 194, 0.6);
+        border-left: 3px solid var(--accent);
     }
 
     .alert {
@@ -486,12 +476,12 @@
         gap: 14px;
         justify-content: flex-end;
         padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        border-top: 1px solid var(--line);
     }
 
     .btn {
         padding: 12px 22px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid var(--line);
         border-radius: 999px;
         font-size: 14px;
         font-weight: 600;
@@ -501,13 +491,13 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: #e6f1f3;
-        background: rgba(255, 255, 255, 0.04);
+        color: var(--ink);
+        background: rgba(17, 28, 46, 0.6);
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
-        border-color: rgba(50, 199, 194, 0.5);
+        background: linear-gradient(135deg, var(--accent), var(--bg-accent));
+        border-color: var(--accent);
         color: #f7fbfb;
     }
 
@@ -517,8 +507,8 @@
     }
 
     .btn-secondary {
-        border-color: rgba(121, 167, 227, 0.6);
-        color: #e6f1f3;
+        border-color: var(--accent-2);
+        color: var(--ink);
     }
 
     .btn-secondary:hover {

@@ -1,424 +1,245 @@
-
 {% extends "base.html" %}
+
+{% block title %}Rechercher des amis - Mon Face{% endblock %}
+
+{% block bodyId %}searchUsersPage{% endblock %}
+
 {% block contenu %}
 
-
-    <!-- ========================================
-         CONTENU PRINCIPAL
-         ======================================== -->
-    <div class="main-content">
-        <div class="search-wrapper">
-            <!-- En-tête -->
-            <div class="search-header">
-                <h1>Rechercher des amis</h1>
-                <p class="search-subtitle">
-                    Trouvez vos camarades de classe ou collègues
-                </p>
-            </div>
-            
-            <!-- Barre de recherche -->
-            <div class="search-box-container">
-                <form action="{% url 'search_users' %}" method="get" class="search-form">
-                    <div class="search-input-wrapper">
-                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input 
-                            type="text" 
-                            name="q" 
-                            value="{{ search_query }}"
-                            placeholder="Rechercher par nom, prénom ou email..."
-                            class="search-input"
-                            autofocus
-                        >
-                        <button type="submit" class="search-btn">
-                            Rechercher
-                        </button>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Résultats -->
-            <div class="search-results">
-                {% if search_query %}
-                    <h2 class="results-title">
-                         Résultats pour "{{ search_query }}" ({{ results|length }})
-                    </h2>
-                    
-                    {% if results %}
-                        <div class="results-grid">
-                            {% for user in results %}
-                                <div class="user-result-card">
-                                    <a href="{% url 'view_profile' user.id %}" class="user-card-link">
-                                        <div class="user-avatar-result">
-                                            {{ user.prenom.0 }}{{ user.nom.0 }}
-                                        </div>
-                                        
-                                        <div class="user-info-result">
-                                            <h3>{{ user.prenom }} {{ user.nom }}</h3>
-                                            
-                                            {% if user.annee %}
-                                                <p class="user-type-badge student-badge">
-                                                     Étudiant - Année {{ user.annee }}
-                                                </p>
-                                                <p class="user-detail-small">
-                                                    {{ user.cursus.titre }}
-                                                </p>
-                                            {% else %}
-                                                <p class="user-type-badge employee-badge">
-                                                     {{ user.job.titre }}
-                                                </p>
-                                                <p class="user-detail-small">
-                                                    {{ user.faculty.nom }}
-                                                </p>
-                                            {% endif %}
-                                        </div>
-                                    </a>
-                                    
-                                    <div class="user-actions-result">
-                                        {% if user in logged_user.amis.all %}
-                                            <button class="btn-result btn-friend" disabled>
-                                                 Ami
-                                            </button>
-                                        {% else %}
-                                            <a href="{% url 'add_friend' user.id %}" class="btn-result btn-add">
-                                                 Ajouter
-                                            </a>
-                                        {% endif %}
-                                        
-                                        <a href="{% url 'view_profile' user.id %}" class="btn-result btn-view">
-                                             Voir profil
-                                        </a>
+<!-- ========================================
+     CONTENU PRINCIPAL
+     ======================================== -->
+<div class="main-content">
+    <div class="search-wrapper">
+        <!-- En-tête -->
+        <div class="search-header">
+            <h1>Rechercher des amis</h1>
+            <p class="search-subtitle">
+                Trouvez vos camarades de classe ou collègues
+            </p>
+        </div>
+        
+        <!-- Barre de recherche -->
+        <div class="search-box-container">
+            <form action="{% url 'search_users' %}" method="get" class="search-form">
+                {% csrf_token %}
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        value="{{ search_query }}"
+                        placeholder="Rechercher par nom, prénom ou email..."
+                        class="search-input"
+                        autofocus
+                    >
+                    <button type="submit" class="search-btn">
+                        Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Résultats -->
+        <div class="search-results">
+            {% if search_query %}
+                <h2 class="results-title">
+                    Résultats pour "{{ search_query }}" ({{ results|length }})
+                </h2>
+                
+                {% if results %}
+                    <div class="results-grid">
+                        {% for user in results %}
+                            <div class="user-result-card" data-user-id="{{ user.id }}">
+                                <a href="{% url 'view_profile' user.id %}" class="user-card-link">
+                                    <div class="user-avatar-result">
+                                        {{ user.prenom.0 }}{{ user.nom.0 }}
                                     </div>
+                                    
+                                    <div class="user-info-result">
+                                        <h3>{{ user.prenom }} {{ user.nom }}</h3>
+                                        
+                                        {% if user.annee %}
+                                            <p class="user-type-badge student-badge">
+                                                Étudiant - Année {{ user.annee }}
+                                            </p>
+                                            <p class="user-detail-small">
+                                                {{ user.cursus.titre }}
+                                            </p>
+                                        {% else %}
+                                            <p class="user-type-badge employee-badge">
+                                                {{ user.job.titre }}
+                                            </p>
+                                            <p class="user-detail-small">
+                                                {{ user.faculty.nom }}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                                
+                                <div class="user-actions-result">
+                                    {% if user.id in friend_ids %}
+                                        <!-- Déjà ami -->
+                                        <button class="btn-result btn-friend" disabled>
+                                            Ami
+                                        </button>
+                                    {% else %}
+                                        <!-- Pas encore ami - Bouton avec AJAX -->
+                                        <button 
+                                            class="btn-result btn-add add-friend-btn" 
+                                            data-user-id="{{ user.id }}"
+                                            onclick="addFriend({{ user.id }}, '{{ user.prenom }} {{ user.nom }}', this)">
+                                            Ajouter
+                                        </button>
+                                    {% endif %}
+                                    
+                                    <a href="{% url 'view_profile' user.id %}" class="btn-result btn-view">
+                                        Voir profil
+                                    </a>
                                 </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="no-results">
-                            <div class="no-results-icon"></div>
-                            <h3>Aucun résultat trouvé</h3>
-                            <p>Essayez avec un autre nom, prénom ou email</p>
-                        </div>
-                    {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% else %}
-                    <div class="search-prompt">
-                        <div class="search-prompt-icon"></div>
-                        <h3>Commencez votre recherche</h3>
-                        <p>Entrez un nom, prénom ou email pour trouver des amis</p>
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <h3>Aucun résultat trouvé</h3>
+                        <p>Essayez avec un autre nom, prénom ou email</p>
                     </div>
                 {% endif %}
-            </div>
+            {% else %}
+                <div class="search-prompt">
+                    <div class="search-prompt-icon">👥</div>
+                    <h3>Commencez votre recherche</h3>
+                    <p>Entrez un nom, prénom ou email pour trouver des amis</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <!-- ========================================
-     STYLES CSS
+     JAVASCRIPT POUR AJAX
+     ======================================== -->
+<script>
+function addFriend(userId, userName, button) {
+    // Désactiver le bouton pendant la requête
+    button.disabled = true;
+    button.innerHTML = '⏳ Ajout...';
+    
+    // Récupérer le CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+    
+    // Faire la requête AJAX
+    fetch(`/friends/add-ajax/${userId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Succès - Supprimer le bouton "Ajouter"
+            button.remove();
+            
+            // Trouver la carte de l'utilisateur
+            const card = document.querySelector(`[data-user-id="${userId}"]`);
+            const actionsDiv = card.querySelector('.user-actions-result');
+            
+            // Créer le nouveau bouton "Ami" (grisé)
+            const friendButton = document.createElement('button');
+            friendButton.className = 'btn-result btn-friend';
+            friendButton.disabled = true;
+            friendButton.innerHTML = 'Ami';
+            
+            // Insérer le bouton avant "Voir profil"
+            const viewButton = actionsDiv.querySelector('.btn-view');
+            actionsDiv.insertBefore(friendButton, viewButton);
+            
+            // Afficher notification
+            showNotification(`${userName} a été ajouté à vos amis !`, 'success');
+        } else {
+            // Erreur
+            button.innerHTML = 'Ajouter';
+            button.disabled = false;
+            showNotification(data.error || 'Erreur lors de l\'ajout', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        button.innerHTML = 'Ajouter';
+        button.disabled = false;
+        showNotification('Erreur de connexion', 'error');
+    });
+}
+
+// Récupérer le cookie CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Afficher une notification
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+</script>
+
+<!-- ========================================
+     STYLE GLASSMORPHISM
      ======================================== -->
 <style>
+    :root {
+        --glass: rgba(17, 28, 46, 0.7);
+        --glass-strong: rgba(17, 28, 46, 0.85);
+        --line: #1f2c44;
+        --ink: #e6f1f3;
+        --muted: #9bb3c0;
+        --accent: #386da6;
+        --accent-2: #79a7e3;
+        --shadow: 0 24px 60px rgba(5, 12, 18, 0.45);
+        --glow: 0 0 20px rgba(56, 109, 166, 0.35);
+        --radius: 18px;
+    }
+
     #searchUsersPage {
-        background-color: #f0f2f5;
+        background:
+            radial-gradient(1200px 500px at -10% -20%, rgba(56, 109, 166, 0.18), transparent 60%),
+            radial-gradient(900px 400px at 110% -10%, rgba(121, 167, 227, 0.15), transparent 60%),
+            linear-gradient(180deg, #0a1424 0%, #0c1d31 100%);
         min-height: 100vh;
         padding: 0;
         margin: 0;
-    }
-    
-    .search-container {
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-    
-   
-    /* ===== CONTENU PRINCIPAL ===== */
-    .main-content {
-        max-width: 1200px;
-        margin: 30px auto;
-        padding: 0 30px;
-    }
-    
-    .search-wrapper {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-    
-    /* En-tête */
-    .search-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 40px;
-        text-align: center;
-        color: white;
-    }
-    
-    .search-header h1 {
-        font-size: 32px;
-        margin-bottom: 10px;
-        color: white;
-    }
-    
-    .search-subtitle {
-        font-size: 16px;
-        opacity: 0.9;
-    }
-    
-    /* Barre de recherche */
-    .search-box-container {
-        padding: 30px 40px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-    
-    .search-input-wrapper {
-        position: relative;
-        display: flex;
-        gap: 10px;
-    }
-    
-    .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 20px;
-        height: 20px;
-        color: #999;
-    }
-    
-    .search-input {
-        flex: 1;
-        padding: 15px 15px 15px 50px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 15px;
-        transition: all 0.3s;
-    }
-    
-    .search-input:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .search-btn {
-        padding: 15px 30px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .search-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* Résultats */
-    .search-results {
-        padding: 40px;
-    }
-    
-    .results-title {
-        font-size: 20px;
-        color: #333;
-        margin-bottom: 25px;
-    }
-    
-    .results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-    }
-    
-    /* Carte utilisateur */
-    .user-result-card {
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 20px;
-        transition: all 0.3s;
-    }
-    
-    .user-result-card:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
-    }
-    
-    .user-card-link {
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .user-avatar-result {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        font-weight: bold;
-        flex-shrink: 0;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    }
-    
-    .user-info-result {
-        flex: 1;
-    }
-    
-    .user-info-result h3 {
-        font-size: 16px;
-        color: #333;
-        margin-bottom: 5px;
-    }
-    
-    .user-type-badge {
-        display: inline-block;
-        font-size: 12px;
-        padding: 3px 8px;
-        border-radius: 4px;
-        margin-bottom: 3px;
-    }
-    
-    .student-badge {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        color: #667eea;
-    }
-    
-    .employee-badge {
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
-        color: #8b5cf6;
-    }
-    
-    .user-detail-small {
-        font-size: 13px;
-        color: #666;
-        margin: 0;
-    }
-    
-    /* Actions */
-    .user-actions-result {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .btn-result {
-        flex: 1;
-        padding: 10px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-decoration: none;
-        display: block;
-    }
-    
-    .btn-add {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-    }
-    
-    .btn-add:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-friend {
-        background: #10b981;
-        color: white;
-        border: none;
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-    
-    .btn-view {
-        background: white;
-        color: #667eea;
-        border: 1px solid #667eea;
-    }
-    
-    .btn-view:hover {
-        background: #667eea;
-        color: white;
-    }
-    
-    /* États vides */
-    .no-results,
-    .search-prompt {
-        text-align: center;
-        padding: 60px 20px;
-    }
-    
-    .no-results-icon,
-    .search-prompt-icon {
-        font-size: 64px;
-        margin-bottom: 20px;
-    }
-    
-    .no-results h3,
-    .search-prompt h3 {
-        font-size: 20px;
-        color: #333;
-        margin-bottom: 10px;
-    }
-    
-    .no-results p,
-    .search-prompt p {
-        font-size: 15px;
-        color: #666;
-    }
-    
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-        .navbar-content {
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .nav-links {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .results-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .search-input-wrapper {
-            flex-direction: column;
-        }
-        
-        .search-btn {
-            width: 100%;
-        }
-    }
-</style>
-<style>
-    :root {
-        --glass: rgba(255, 255, 255, 0.08);
-        --glass-strong: rgba(255, 255, 255, 0.14);
-        --line: rgba(255, 255, 255, 0.16);
-        --ink: #e6f1f3;
-        --muted: rgba(230, 241, 243, 0.7);
-        --accent: #32c7c2;
-        --accent-2: #f0c75e;
-        --shadow: 0 24px 60px rgba(5, 12, 18, 0.45);
-        --glow: 0 0 20px rgba(50, 199, 194, 0.35);
-        --radius: 18px;
     }
 
     .main-content {
@@ -436,55 +257,99 @@
     }
 
     .search-header {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.25), rgba(24, 56, 88, 0.65));
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.35), rgba(12, 29, 49, 0.9));
         border-bottom: 1px solid var(--line);
         color: var(--ink);
+        padding: 40px;
+        text-align: center;
     }
 
     .search-header h1 {
         color: var(--ink);
         letter-spacing: 0.4px;
+        font-size: 32px;
+        margin-bottom: 10px;
     }
 
     .search-subtitle {
         color: var(--muted);
+        font-size: 16px;
+        opacity: 0.9;
     }
 
     .search-box-container {
         border-bottom: 1px solid var(--line);
+        padding: 30px 40px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        gap: 10px;
     }
 
     .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
         color: var(--muted);
     }
 
     .search-input {
+        flex: 1;
+        padding: 15px 15px 15px 50px;
         background: rgba(9, 16, 22, 0.55);
         color: var(--ink);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s;
+    }
+
+    .search-input::placeholder {
+        color: var(--muted);
     }
 
     .search-input:focus {
-        border-color: rgba(50, 199, 194, 0.6);
-        box-shadow: 0 0 0 3px rgba(50, 199, 194, 0.18);
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(121, 167, 227, 0.18);
     }
 
     .search-btn {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
-        border: 1px solid rgba(50, 199, 194, 0.4);
+        padding: 15px 30px;
+        background: linear-gradient(135deg, var(--accent), #0c1d31);
+        border: 1px solid rgba(56, 109, 166, 0.5);
         border-radius: 999px;
         color: #f7fbfb;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
     }
 
     .search-btn:hover {
         box-shadow: var(--glow);
+        transform: translateY(-2px);
     }
 
-    .results-title,
-    .no-results h3,
-    .search-prompt h3 {
+    .search-results {
+        padding: 40px;
+    }
+
+    .results-title {
+        font-size: 20px;
         color: var(--ink);
+        margin-bottom: 25px;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
     }
 
     .user-result-card {
@@ -492,62 +357,110 @@
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 16px;
         backdrop-filter: blur(12px);
+        padding: 20px;
+        transition: all 0.3s;
     }
 
     .user-result-card:hover {
-        border-color: rgba(50, 199, 194, 0.4);
+        border-color: rgba(56, 109, 166, 0.55);
         box-shadow: 0 18px 40px rgba(5, 12, 18, 0.45);
         transform: translateY(-3px);
     }
 
+    .user-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
     .user-avatar-result {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
-        box-shadow: 0 6px 16px rgba(50, 199, 194, 0.35);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #386da6, #0c1d31);
+        box-shadow: 0 6px 16px rgba(56, 109, 166, 0.35);
+        color: #f7fbfb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .user-info-result {
+        flex: 1;
     }
 
     .user-info-result h3 {
         color: var(--ink);
+        font-size: 16px;
+        margin-bottom: 5px;
     }
 
     .user-type-badge {
+        display: inline-block;
+        font-size: 12px;
+        padding: 3px 8px;
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.14);
+        margin-bottom: 3px;
     }
 
     .student-badge {
-        background: rgba(50, 199, 194, 0.12);
-        color: var(--accent);
-    }
-
-    .employee-badge {
-        background: rgba(240, 199, 94, 0.16);
+        background: rgba(56, 109, 166, 0.18);
         color: var(--accent-2);
     }
 
-    .user-detail-small,
-    .no-results p,
-    .search-prompt p {
+    .employee-badge {
+        background: rgba(15, 34, 56, 0.7);
+        color: var(--ink);
+    }
+
+    .user-detail-small {
+        font-size: 13px;
         color: var(--muted);
+        margin: 0;
+    }
+
+    .user-actions-result {
+        display: flex;
+        gap: 10px;
     }
 
     .btn-result {
+        flex: 1;
+        padding: 10px;
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.18);
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: block;
     }
 
     .btn-add {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
-        border-color: rgba(50, 199, 194, 0.4);
+        background: linear-gradient(135deg, var(--accent), #0c1d31);
+        border-color: rgba(56, 109, 166, 0.5);
+        color: #f7fbfb;
     }
 
-    .btn-add:hover {
+    .btn-add:hover:not(:disabled) {
         box-shadow: var(--glow);
+        transform: translateY(-2px);
     }
 
     .btn-friend {
         background: rgba(16, 185, 129, 0.2);
         border-color: rgba(16, 185, 129, 0.4);
         color: #c7f9e4;
+        cursor: not-allowed;
     }
 
     .btn-view {
@@ -557,8 +470,91 @@
     }
 
     .btn-view:hover {
-        background: rgba(50, 199, 194, 0.15);
-        border-color: rgba(50, 199, 194, 0.4);
+        background: rgba(56, 109, 166, 0.2);
+        border-color: rgba(56, 109, 166, 0.6);
+    }
+
+    .no-results,
+    .search-prompt {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .no-results-icon,
+    .search-prompt-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+
+    .no-results h3,
+    .search-prompt h3 {
+        font-size: 20px;
+        color: var(--ink);
+        margin-bottom: 10px;
+    }
+
+    .no-results p,
+    .search-prompt p {
+        font-size: 15px;
+        color: var(--muted);
+    }
+
+    /* ===== NOTIFICATIONS ===== */
+    .notification {
+        position: fixed;
+        top: 80px;
+        right: 30px;
+        padding: 16px 24px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        font-weight: 600;
+        font-size: 14px;
+        z-index: 9999;
+        opacity: 0;
+        transform: translateX(400px);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--line);
+    }
+    
+    .notification.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    .notification-success {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+        border-color: rgba(16, 185, 129, 0.4);
+        color: #f7fbfb;
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+    }
+    
+    .notification-error {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #f7fbfb;
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .search-input-wrapper {
+            flex-direction: column;
+        }
+        
+        .search-btn {
+            width: 100%;
+        }
+        
+        .notification {
+            right: 10px;
+            left: 10px;
+            top: 70px;
+        }
     }
 </style>
 {% endblock %}

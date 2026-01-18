@@ -87,11 +87,30 @@
      STYLES CSS
      ======================================== -->
 <style>
+    :root {
+        --bg: #0a1424;
+        --bg-accent: #0c1d31;
+        --ink: #e6f1f3;
+        --muted: #9bb3c0;
+        --line: #1f2c44;
+        --accent: #386da6;
+        --accent-2: #79a7e3;
+    }
+
+    html, body {
+        height: 100%;
+        background: var(--bg);
+    }
+
     #loginPage {
         margin: 0;
         padding: 0;
         min-height: 100vh;
-        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%), radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%), linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
+        width: 100%;
+        background:
+            radial-gradient(1200px 500px at -10% -20%, rgba(56, 109, 166, 0.18), transparent 60%),
+            radial-gradient(900px 400px at 110% -10%, rgba(121, 167, 227, 0.15), transparent 60%),
+            linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -103,14 +122,16 @@
         margin: 40px auto;
         display: flex;
         justify-content: center;
-        background: rgba(12, 22, 36, 0.9);
-        border-radius: 20px;
+        background: rgba(17, 28, 46, 0.85);
+        border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 24px 70px rgba(2, 8, 14, 0.55);
+        box-shadow: 0 28px 80px rgba(5, 12, 22, 0.55);
+        border: 1px solid var(--line);
+        position: relative;
     }
     /* ===== SECTION FORMULAIRE ===== */
     .form-section {
-        padding: 60px 50px;
+        padding: 56px 50px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -132,21 +153,21 @@
     
     .form-header h2 {
         font-size: 32px;
-        color: #e6f1f3;
+        color: var(--ink);
         margin: 0 0 10px 0;
         font-weight: 700;
     }
     
     .form-subtitle {
         font-size: 15px;
-        color: rgba(230, 241, 243, 0.7);
+        color: var(--muted);
         margin: 0;
     }
     
     /* Alertes */
     .alert {
         padding: 15px 20px;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-bottom: 25px;
         display: flex;
         align-items: flex-start;
@@ -195,7 +216,7 @@
         align-items: center;
         gap: 8px;
         font-weight: 600;
-        color: #e6f1f3;
+        color: var(--ink);
         margin-bottom: 10px;
         font-size: 15px;
     }
@@ -209,11 +230,12 @@
     .form-group input[type="text"] {
         width: 100%;
         padding: 14px 18px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid var(--line);
         border-radius: 10px;
         font-size: 15px;
         transition: all 0.3s;
-        background: rgba(12, 22, 36, 0.9);
+        background: #121d31;
+        color: var(--ink);
     }
 
     .password-field {
@@ -232,9 +254,9 @@
         right: 8px;
         top: 50%;
         transform: translateY(-50%);
-        background: rgba(18, 34, 56, 0.95);
-        border: 1px solid rgba(121, 167, 227, 0.55);
-        color: #e6f1f3;
+        background: #0f2238;
+        border: 1px solid var(--line);
+        color: var(--ink);
         border-radius: 8px;
         padding: 7px 12px;
         font-size: 12px;
@@ -247,14 +269,14 @@
     }
 
     .toggle-password:hover {
-        background: rgba(121, 167, 227, 0.25);
-        border-color: rgba(121, 167, 227, 0.75);
+        background: rgba(56, 109, 166, 0.25);
+        border-color: var(--accent);
     }
     
     .form-group input:focus {
         outline: none;
-        border-color: rgba(56, 109, 166, 0.8);
-        box-shadow: 0 0 0 4px rgba(56, 109, 166, 0.2);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(121, 167, 227, 0.18);
     }
     
     .field-error {
@@ -284,7 +306,7 @@
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        color: rgba(230, 241, 243, 0.7);
+        color: var(--muted);
     }
     
     .checkbox-label input[type="checkbox"] {
@@ -314,7 +336,7 @@
     }
     
     .btn-login {
-        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%), radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%), linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--bg-accent) 100%);
         color: white;
         margin-bottom: 20px;
         max-width: 320px;
@@ -324,7 +346,7 @@
     
     .btn-login:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(31, 75, 136, 0.5);
+        box-shadow: 0 12px 28px rgba(8, 18, 32, 0.55);
     }
     
     .btn-login:active {
@@ -332,19 +354,19 @@
     }
     
     .btn-register {
-        background: rgba(12, 22, 36, 0.9);
-        color: #79a7e3;
-        border: 1px solid rgba(121, 167, 227, 0.6);
+        background: #0f2238;
+        color: var(--ink);
+        border: 1px solid var(--line);
         max-width: 320px;
         margin-left: auto;
         margin-right: auto;
     }
     
     .btn-register:hover {
-        background: rgba(121, 167, 227, 0.2);
-        color: white;
+        background: rgba(56, 109, 166, 0.35);
+        color: #ffffff;
         transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(31, 75, 136, 0.35);
+        box-shadow: 0 10px 24px rgba(10, 20, 35, 0.45);
     }
     
     /* SÃ©parateur */
@@ -361,14 +383,14 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: rgba(255, 255, 255, 0.15);
+        background: var(--line);
     }
     
     .divider-text {
         position: relative;
         background: transparent;
         padding: 0 20px;
-        color: rgba(230, 241, 243, 0.6);
+        color: var(--muted);
         font-size: 14px;
         font-weight: 600;
     }
@@ -380,7 +402,7 @@
     
     .register-text {
         font-size: 15px;
-        color: rgba(230, 241, 243, 0.7);
+        color: var(--muted);
         margin-bottom: 15px;
     }
     
@@ -389,12 +411,12 @@
         text-align: center;
         margin-top: 40px;
         padding-top: 30px;
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        border-top: 1px solid var(--line);
     }
     
     .form-footer p {
         font-size: 13px;
-        color: rgba(230, 241, 243, 0.6);
+        color: var(--muted);
         margin: 0;
     }
     

@@ -272,10 +272,21 @@
 </div>
 
 <style>
+    :root {
+        --bg: #0a1424;
+        --bg-accent: #0c1d31;
+        --ink: #e6f1f3;
+        --muted: #9bb3c0;
+        --line: #1f2c44;
+        --accent: #386da6;
+        --accent-2: #79a7e3;
+    }
+
     #registerPage {
-        background: radial-gradient(900px 500px at 10% -20%, rgba(56, 109, 166, 0.35), transparent 60%),
-                    radial-gradient(800px 400px at 120% 0%, rgba(19, 52, 96, 0.4), transparent 60%),
-                    linear-gradient(160deg, #0a1424 0%, #0e1a2b 50%, #0f223a 100%);
+        background:
+            radial-gradient(1200px 500px at -10% -20%, rgba(56, 109, 166, 0.18), transparent 60%),
+            radial-gradient(900px 400px at 110% -10%, rgba(121, 167, 227, 0.15), transparent 60%),
+            linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
         min-height: 100vh;
         padding: 40px 20px;
     }
@@ -283,20 +294,20 @@
     .register-container {
         max-width: 760px;
         margin: 0 auto;
-        background: rgba(12, 22, 36, 0.92);
+        background: rgba(17, 28, 46, 0.85);
         border-radius: 18px;
-        box-shadow: 0 24px 70px rgba(2, 8, 14, 0.55);
+        box-shadow: 0 24px 70px rgba(5, 12, 22, 0.55);
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e6f1f3;
+        border: 1px solid var(--line);
+        color: var(--ink);
     }
 
     .header {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.2), rgba(24, 56, 88, 0.65));
-        color: #e6f1f3;
+        background: linear-gradient(135deg, rgba(56, 109, 166, 0.28), rgba(12, 29, 49, 0.9));
+        color: var(--ink);
         padding: 36px 30px;
         text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--line);
     }
 
     .header h1 {
@@ -304,7 +315,7 @@
         margin: 0 0 10px 0;
         border: none;
         padding: 0;
-        color: #e6f1f3;
+        color: var(--ink);
         display: inline-flex;
         align-items: center;
         gap: 10px;
@@ -334,13 +345,13 @@
         font-size: 15px;
         opacity: 0.85;
         margin: 0;
-        color: rgba(230, 241, 243, 0.75);
+        color: var(--muted);
     }
 
     .user-type-selector {
         padding: 26px 30px;
-        background: rgba(255, 255, 255, 0.04);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(12, 29, 49, 0.55);
+        border-bottom: 1px solid var(--line);
     }
 
     .selection-label {
@@ -348,7 +359,7 @@
         font-size: 15px;
         font-weight: 600;
         margin-bottom: 18px;
-        color: #e6f1f3;
+        color: var(--ink);
     }
 
     .button-group {
@@ -363,27 +374,27 @@
         align-items: center;
         justify-content: center;
         padding: 20px 18px;
-        background: rgba(10, 18, 24, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: #0f2238;
+        border: 1px solid var(--line);
         border-radius: 14px;
         text-decoration: none;
-        color: #e6f1f3;
+        color: var(--ink);
         transition: all 0.3s ease;
         cursor: pointer;
-        box-shadow: 0 10px 24px rgba(2, 8, 14, 0.3);
+        box-shadow: 0 10px 24px rgba(8, 18, 32, 0.35);
     }
 
     .type-button:hover {
-        border-color: rgba(50, 199, 194, 0.5);
+        border-color: var(--accent);
         transform: translateY(-3px);
-        box-shadow: 0 16px 30px rgba(2, 8, 14, 0.45);
+        box-shadow: 0 16px 30px rgba(10, 20, 35, 0.35);
     }
 
     .type-button.active {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.3), rgba(24, 56, 88, 0.8));
-        border-color: rgba(50, 199, 194, 0.6);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--bg-accent) 100%);
+        border-color: var(--accent);
         color: #f7fbfb;
-        box-shadow: 0 18px 35px rgba(2, 8, 14, 0.55);
+        box-shadow: 0 18px 35px rgba(8, 18, 32, 0.55);
     }
 
     .type-button .icon {
@@ -408,7 +419,7 @@
     .form-section {
         margin-bottom: 28px;
         padding-bottom: 26px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--line);
     }
 
     .form-section:last-child {
@@ -417,7 +428,7 @@
 
     .form-section h3 {
         font-size: 16px;
-        color: #e6f1f3;
+        color: var(--ink);
         margin-bottom: 16px;
         font-weight: 600;
         display: inline-flex;
@@ -428,7 +439,7 @@
     .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 14px;
+        gap: 20px;
     }
 
     .form-group {
@@ -439,7 +450,7 @@
         display: block;
         font-weight: 600;
         margin-bottom: 8px;
-        color: #e6f1f3;
+        color: var(--ink);
         font-size: 14px;
     }
 
@@ -447,26 +458,26 @@
     .form-group select {
         width: 100%;
         padding: 12px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid var(--line);
         border-radius: 10px;
         font-size: 14px;
         transition: all 0.3s;
-        background: rgba(9, 16, 26, 0.6);
-        color: #e6f1f3;
+        background: #121d31;
+        color: var(--ink);
     }
 
     .form-group input:focus,
     .form-group select:focus {
         outline: none;
-        border-color: rgba(50, 199, 194, 0.6);
-        box-shadow: 0 0 0 3px rgba(50, 199, 194, 0.18);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(121, 167, 227, 0.18);
     }
 
     .help-text {
         display: block;
         margin-top: 5px;
         font-size: 12px;
-        color: rgba(230, 241, 243, 0.6);
+        color: var(--muted);
         font-style: italic;
     }
 
@@ -493,12 +504,12 @@
         gap: 14px;
         margin-top: 30px;
         padding-top: 26px;
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        border-top: 1px solid var(--line);
     }
 
     .btn {
         padding: 13px 20px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid var(--line);
         border-radius: 999px;
         font-size: 15px;
         font-weight: 600;
@@ -510,35 +521,35 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        color: #e6f1f3;
+        color: var(--ink);
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, rgba(50, 199, 194, 0.9), rgba(24, 56, 88, 0.95));
-        border-color: rgba(50, 199, 194, 0.5);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--bg-accent) 100%);
+        border-color: var(--accent);
         color: #f7fbfb;
     }
 
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 24px rgba(2, 8, 14, 0.45);
+        box-shadow: 0 12px 24px rgba(10, 20, 35, 0.45);
     }
 
     .btn-secondary {
-        background: rgba(255, 255, 255, 0.05);
-        color: #e6f1f3;
-        border-color: rgba(121, 167, 227, 0.6);
+        background: #0f2238;
+        color: var(--ink);
+        border-color: var(--line);
     }
 
     .btn-secondary:hover {
-        background: rgba(121, 167, 227, 0.2);
+        background: rgba(56, 109, 166, 0.35);
         transform: translateY(-2px);
     }
 
     .required-note {
         text-align: center;
         font-size: 12px;
-        color: rgba(230, 241, 243, 0.6);
+        color: var(--muted);
         margin-top: 16px;
         font-style: italic;
     }

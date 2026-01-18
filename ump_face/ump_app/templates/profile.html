@@ -12,7 +12,21 @@
                         {{ profile_user.prenom.0 }}{{ profile_user.nom.0 }}
                     </div>
                     <div class="profile-heading-text">
+                        <div class="profile-heading-row">
                         <h2 class="profile-name-large">{{ profile_user.prenom }} {{ profile_user.nom }}</h2>
+                        <div class="profile-actions">
+                                {% if is_own_profile %}
+                                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">Modifier mon profil</a>
+                                {% else %}
+                                    {% if is_friend %}
+                                        <button class="btn btn-success" disabled>Vous êtes amis</button>
+                                        <a href="{% url 'remove_friend' profile_user.id %}" class="btn btn-danger" onclick="return confirm('Retirer des amis ?');">Retirer</a>
+                                    {% else %}
+                                        <a href="{% url 'add_friend' profile_user.id %}" class="btn btn-primary">Ajouter comme ami</a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
                         {% if profile_user.annee %}
                             <p class="profile-type">Étudiant</p>
                         {% else %}
@@ -21,32 +35,42 @@
                     </div>
                 </div>
                 
-                <div class="profile-actions">
-                    {% if is_own_profile %}
-                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Modifier mon profil</a>
-                    {% else %}
-                        {% if is_friend %}
-                            <button class="btn btn-success" disabled>Vous êtes amis</button>
-                            <a href="{% url 'remove_friend' profile_user.id %}" class="btn btn-danger" onclick="return confirm('Retirer des amis ?');">Retirer</a>
-                        {% else %}
-                            <a href="{% url 'add_friend' profile_user.id %}" class="btn btn-primary">Ajouter comme ami</a>
-                        {% endif %}
-                        <button class="btn btn-outline">Envoyer un message</button>
-                    {% endif %}
-                </div>
 
                 <div class="profile-details-row">
                     <div class="profile-info-card">
                         <h3>Informations</h3>
                         <div class="info-grid-horizontal">
-                            <div class="info-item-box"><strong>Faculté</strong><p>{{ profile_user.faculty.nom }}</p></div>
-                            {% if profile_user.annee %}
-                                <div class="info-item-box"><strong>Année</strong><p>{{ profile_user.annee }}</p></div>
-                                <div class="info-item-box"><strong>Cursus</strong><p>{{ profile_user.cursus.titre }}</p></div>
-                            {% endif %}
-                            {% if is_own_profile or is_friend %}
-                                <div class="info-item-box"><strong>Email</strong><p>{{ profile_user.email }}</p></div>
-                            {% endif %}
+                            <div class="info-item-box">
+                                <strong>Faculté</strong>
+                                <p>{{ profile_user.faculty.nom }}</p>
+                            </div>
+
+                            <div class="info-item-box">
+                                <strong>Année</strong>
+                                {% if profile_user.annee %}
+                                    <p>{{ profile_user.annee }}</p>
+                                {% else %}
+                                    <p class="placeholder">—</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="info-item-box">
+                                <strong>Cursus</strong>
+                                {% if profile_user.annee %}
+                                    <p>{{ profile_user.cursus.titre }}</p>
+                                {% else %}
+                                    <p class="placeholder">—</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="info-item-box">
+                                <strong>Email</strong>
+                                {% if is_own_profile or is_friend %}
+                                    <p>{{ profile_user.email }}</p>
+                                {% else %}
+                                    <p class="placeholder">Privé</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
@@ -71,6 +95,9 @@
             <div class="messages-section">
                 <div class="section-header">
                     <h3>Messages de {{ profile_user.prenom }}</h3>
+                    {% if not is_own_profile %}
+                        <button class="btn btn-outline">Envoyer un message</button>
+                    {% endif %}
                 </div>
                 
                 {% if user_messages %}
@@ -113,21 +140,28 @@
                 </ul>
             </div>
 
-            {% if not is_own_profile %}
-            <div class="mutual-friends-card">
-                <h3>Amis en commun</h3>
-                <div class="mutual-list">
-                    {% for ami in logged_user.amis.all %}
-                        {% if ami in profile_user.amis.all %}
-                        <a href="{% url 'view_profile' ami.id %}" class="mutual-item">
-                            <div class="tiny-avatar">{{ ami.prenom.0 }}{{ ami.nom.0 }}</div>
-                            <span>{{ ami.prenom }}</span>
-                        </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
+{% if not is_own_profile %}
+<div class="friends-section-card"> <!-- Changé ici -->
+    <div class="card-title-row">
+        <h3>Amis en commun</h3>
+        <!-- Note : Le calcul exact du nombre d'amis en commun nécessiterait un filtre Django personnalisé ou une logique de vue -->
+    </div>
+    
+    <ul class="friends-grid-modern"> <!-- Utilisation de la même classe de grille -->
+        {% for ami in logged_user.amis.all %}
+            {% if ami in profile_user.amis.all %}
+                <li class="friend-card-mini">
+                    <a href="{% url 'view_profile' ami.id %}">
+                        <div class="friend-avatar-sq">{{ ami.prenom.0 }}{{ ami.nom.0 }}</div>
+                        <span class="friend-name-text">{{ ami.prenom }}</span>
+                    </a>
+                </li>
             {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
         </aside>
 
     </div>
@@ -135,14 +169,17 @@
 
 <style>
     :root {
-        --glass: rgba(255, 255, 255, 0.07);
-        --glass-hover: rgba(50, 199, 194, 0.12);
-        --line: rgba(255, 255, 255, 0.12);
-        --ink: #eef5f6;
-        --muted: rgba(238, 245, 246, 0.6);
-        --accent: #32c7c2;
-        --accent-glow: rgba(50, 199, 194, 0.3);
-        --bg-body: #0a1218;
+        --bg: #0a1424;
+        --bg-accent: #0c1d31;
+        --glass: rgba(17, 28, 46, 0.7);
+        --glass-hover: rgba(56, 109, 166, 0.16);
+        --line: #1f2c44;
+        --ink: #e6f1f3;
+        --muted: #9bb3c0;
+        --accent: #386da6;
+        --accent-2: #79a7e3;
+        --accent-glow: rgba(56, 109, 166, 0.35);
+        --bg-body: #0a1424;
         --radius: 20px;
     }
 
@@ -189,9 +226,28 @@
     /* --- SECTION PROFIL ÉLARGIE --- */
     .profile-cover {
         height: 160px;
-        background: linear-gradient(135deg, var(--accent-glow), #183858);
+        background: linear-gradient(135deg, var(--accent-glow), var(--bg-accent));
         border-radius: 14px;
         margin: -24px -24px 20px -24px;
+    }
+
+    .profile-header-inline {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+    }
+
+    .profile-heading-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .profile-heading-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
     }
 
     .profile-avatar-large {
@@ -206,21 +262,22 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    .profile-name-large { text-align: left; font-size: 30px; margin-top: -24px; margin-bottom: 5px; padding-left: 16px; }
-    .profile-type { text-align: center; color: var(--accent); font-weight: 600; margin-bottom: 20px; }
-    .profile-actions { display: flex; justify-content: center; gap: 12px; }
+    .profile-name-large { text-align: left; font-size: 30px; margin-top: 6px; margin-bottom: 4px; padding-left: 16px; }
+    .profile-type { text-align: left; color: var(--accent); font-weight: 600; margin-bottom: 20px; padding-left: 16px; }
+    .profile-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
 
     /* Détails horizontaux */
     .profile-details-row { display: grid; grid-template-columns: 3fr 0.8fr; gap: 20px; }
-    .info-grid-horizontal { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .info-grid-horizontal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .info-item-box { background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .info-item-box strong { font-size: 11px; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
     .info-item-box p { margin: 0; color: var(--ink); }
+    .placeholder { color: var(--muted); }
 
     /* Statistiques */
-    .stats-mini-grid { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
-    .stat-pill { text-align: center; background: rgba(50, 199, 194, 0.05); padding: 12px; border-radius: 14px; border: 1px solid var(--line); }
-    .stat-val { display: block; font-size: 22px; font-weight: bold; color: #f0c75e; }
+    .stats-mini-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
+    .stat-pill { text-align: center; background: rgba(56, 109, 166, 0.16); padding: 12px; border-radius: 14px; border: 1px solid var(--line); }
+    .stat-val { display: block; font-size: 22px; font-weight: bold; color: var(--accent-2); }
     .stat-lab { font-size: 11px; color: var(--muted); }
 
     /* --- SECTION AMIS (SIDEBAR DROITE) --- */
@@ -250,6 +307,8 @@
     .message-author-info strong { display: block; font-size: 15px; }
     .message-meta { font-size: 12px; color: var(--muted); }
     .message-content { line-height: 1.6; margin-bottom: 0; color: var(--ink); }
+
+    .section-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 
     /* BOUTONS GENERAUX */
     .btn { padding: 12px 24px; border-radius: 30px; font-weight: bold; text-decoration: none; font-size: 14px; transition: 0.3s; }
