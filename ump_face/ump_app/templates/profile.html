@@ -95,8 +95,10 @@
             <div class="messages-section">
                 <div class="section-header">
                     <h3>Messages de {{ profile_user.prenom }}</h3>
-                    {% if not is_own_profile %}
+                    {% if is_own_profile %}
+                        <a href="{% url 'welcome' %}" >
                         <button class="btn btn-outline">Envoyer un message</button>
+                        </a>
                     {% endif %}
                 </div>
                 
