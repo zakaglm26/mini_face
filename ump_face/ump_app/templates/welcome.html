@@ -92,7 +92,7 @@
                     <div class="form-errors">
                         {% for field, errors in form.errors.items %}
                             {% for error in errors %}
-                                <p>⚠️ {{ error }}</p>
+                                <p> {{ error }}</p>
                             {% endfor %}
                         {% endfor %}
                     </div>
@@ -115,7 +115,7 @@
             
             <!-- Liste des messages -->
             <div class="messages-feed">
-                <h3>Fil d'actualité</h3>
+                <h3>Nouveautés</h3>
                 
                 {% if messages %}
                     {% for message in messages %}
@@ -183,37 +183,47 @@
                     </ul>
                 {% else %}
                     <p class="no-friends">Vous n'avez pas encore d'amis.</p>
-                    <a href="{% url 'search_users' %}" class="btn-add-friend">➕ Ajouter des amis</a>
+                    <a href="{% url 'search_users' %}" class="btn-add-friend"> Ajouter des amis</a>
                 {% endif %}
             </div>
 
-            <div class="friends-widget">
-                <h3>Ma Faculté : {{ logged_user.faculty.nom }} ({{ members_same_faculty.count }})</h3>
-                
-                {% if members_same_faculty %}
-                    <ul class="friends-list">
-                        {% for membre in members_same_faculty %}
-                            <li class="friend-item">
-                                <!-- Remplacez 'view_profile' par le nom de votre URL de profil -->
-                                <a href="{% url 'view_profile' membre.id %}" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; width:100%;">
-                                    <div class="friend-avatar" style="background-color: #007bff; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                                        {{ membre.prenom.0|upper }}{{ membre.nom.0|upper }}
-                                    </div>
-                                    <span class="friend-name">
-                                        {{ membre.prenom }} {{ membre.nom }}
-                                        <!-- Petit badge pour différencier Étudiant / Employé -->
-                                        <small style="display:block; color:gray; font-size: 0.8em;">
-                                            {% if membre.student %} Étudiant {% elif membre.employee %} Employé {% endif %}
-                                        </small>
-                                    </span>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="no-friends">Aucun autre membre dans votre faculté pour le moment.</p>
-                {% endif %}
-            </div>
+
+<div class="friends-widget">
+    <h3>Ma Faculté : {{ logged_user.faculty.nom }} ({{ members_same_faculty.count }})</h3>
+    
+    {% if members_same_faculty %}
+        <ul class="friends-list" style="list-style: none; padding: 0;">
+            {% for membre in members_same_faculty %}
+                <li class="friend-item" style="margin-bottom: 10px;">
+                    <a href="{% url 'view_profile' membre.id %}" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; width:100%;">
+                        
+                        <div class="friend-avatar" style="background-color: #007bff; color: white; min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                            {{ membre.prenom.0|upper }}{{ membre.nom.0|upper }}
+                        </div>
+
+                        <span class="friend-name">
+                            {{ membre.prenom }} {{ membre.nom }}
+                            
+                            <small style="display:block; color:gray; font-size: 0.8em;">
+                                {# On vérifie si l'objet lié 'student' ou 'employee' existe #}
+                                {% if membre.student.id %}
+                                    Étudiant (Année {{ membre.student.annee }})
+                                {% elif membre.employee.id %}
+                                    Employé - {{ membre.employee.job.titre }}
+                                {% endif %}
+                            </small>
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-friends">Aucun autre membre suggéré dans votre faculté.</p>
+    {% endif %}
+</div>
+
+
+
         </aside>
     </div>
 </div>
@@ -386,7 +396,7 @@
 
     .friends-list {
         list-style: none;
-        padding: 0;
+        padding: 4px 0 0;
         margin: 0;
         overflow-y: auto;
         max-height: 290px;
@@ -631,8 +641,9 @@
         margin: 5px 0;
     }
     
+    .publish-textarea,
     .post-textarea {
-        width: 100%;
+        width: 96%;
         padding: 12px;
         border: 2px solid var(--line);
         border-radius: 8px;
@@ -647,6 +658,7 @@
         color: #0a1424;
     }
 
+    .publish-textarea:focus,
     .post-textarea:focus {
         outline: none;
         border-color: var(--accent);

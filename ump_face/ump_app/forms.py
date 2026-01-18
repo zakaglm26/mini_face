@@ -291,7 +291,7 @@ class MessageForm(forms.ModelForm):
         widgets = {
             'contenu': forms.Textarea(attrs={
                 'class': 'publish-textarea',
-                'placeholder': 'Quoi de neuf ?',
+                'placeholder': ' Partagez vos pensées...',
                 'rows': 4,
             })
         }
