@@ -219,10 +219,12 @@ def welcome(request):
             return redirect('/welcome/')
         else:
             # Si le formulaire est invalide, afficher les erreurs
+            members_same_faculty = Person.objects.filter(faculty=logged_user.faculty).exclude(id=logged_user.id)
             return render(request, 'welcome.html', {
                 'logged_user': logged_user,
                 'form': form,
                 'messages': get_messages_for_user(logged_user),
+                'members_same_faculty': members_same_faculty,
             })
     
     # 4. Afficher la page (GET)
@@ -232,12 +234,16 @@ def welcome(request):
     
     # 5. Récupérer les messages à afficher
     messages_list = get_messages_for_user(logged_user)
+
+    # 5bis. Récupérer les membres de la même faculté (hors soi-même)
+    members_same_faculty = Person.objects.filter(faculty=logged_user.faculty).exclude(id=logged_user.id)
     
     # 6. Afficher le template
     return render(request, 'welcome.html', {
         'logged_user': logged_user,
         'form': form,
         'messages': messages_list,
+        'members_same_faculty': members_same_faculty,
     })
 
 
