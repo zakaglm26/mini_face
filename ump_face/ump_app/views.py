@@ -219,7 +219,11 @@ def welcome(request):
             return redirect('/welcome/')
         else:
             # Si le formulaire est invalide, afficher les erreurs
-            members_same_faculty = Person.objects.filter(faculty=logged_user.faculty).exclude(id=logged_user.id)
+            members_same_faculty = (
+                Person.objects.filter(faculty=logged_user.faculty)
+                .exclude(id=logged_user.id)
+                .exclude(id__in=logged_user.amis.all())
+            )
             return render(request, 'welcome.html', {
                 'logged_user': logged_user,
                 'form': form,
@@ -236,7 +240,11 @@ def welcome(request):
     messages_list = get_messages_for_user(logged_user)
 
     # 5bis. Récupérer les membres de la même faculté (hors soi-même)
-    members_same_faculty = Person.objects.filter(faculty=logged_user.faculty).exclude(id=logged_user.id)
+    members_same_faculty = (
+        Person.objects.filter(faculty=logged_user.faculty)
+        .exclude(id=logged_user.id)
+        .exclude(id__in=logged_user.amis.all())
+    )
     
     # 6. Afficher le template
     return render(request, 'welcome.html', {
@@ -541,18 +549,27 @@ def logout(request):
     return redirect('/login/')       
 
 
+
 def same_faculty_users_view(request, person_id):
-    # 1. On récupère l'utilisateur actuel (celui qui consulte la page)
+    # 1. On récupère l'utilisateur actuel
     logged_user = get_object_or_404(Person, id=person_id)
     
-    # 2. On récupère les autres personnes de la même faculté
-    # On exclut 'logged_user' pour ne pas se voir soi-même dans la liste
-    members_same_faculty = Person.objects.filter(
-        faculty=logged_user.faculty
-    ).exclude(id=logged_user.id)
+    # 2. On filtre les membres de la même faculté
+    # On exclut l'utilisateur lui-même (.exclude(id=logged_user.id))
+    # On exclut également ceux qui sont déjà dans la liste 'amis' (.exclude(id__in=...))
+
+    members_same_faculty = (
+    Person.objects.filter(faculty=logged_user.faculty)
+    .exclude(id=logged_user.id)
+    .exclude(id__in=logged_user.amis.all())
+)
+
+
+
     
-    return render(request, 'votre_template.html', {
+    return render(request, 'welcome.html', {
         'logged_user': logged_user,
         'members_same_faculty': members_same_faculty
     })
+
 
