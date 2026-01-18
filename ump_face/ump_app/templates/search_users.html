@@ -91,7 +91,8 @@
                                         <button 
                                             class="btn-result btn-add add-friend-btn" 
                                             data-user-id="{{ user.id }}"
-                                            onclick="addFriend({{ user.id }}, '{{ user.prenom }} {{ user.nom }}', this)">
+                                           onclick="addFriend({{ user.id }}, '{{ user.prenom }} {{ user.nom }}', this)">
+
                                             Ajouter
                                         </button>
                                     {% endif %}
@@ -105,14 +106,14 @@
                     </div>
                 {% else %}
                     <div class="no-results">
-                        <div class="no-results-icon">🔍</div>
+                        <div class="no-results-icon"></div>
                         <h3>Aucun résultat trouvé</h3>
                         <p>Essayez avec un autre nom, prénom ou email</p>
                     </div>
                 {% endif %}
             {% else %}
                 <div class="search-prompt">
-                    <div class="search-prompt-icon">👥</div>
+                    <div class="search-prompt-icon"></div>
                     <h3>Commencez votre recherche</h3>
                     <p>Entrez un nom, prénom ou email pour trouver des amis</p>
                 </div>
@@ -128,7 +129,7 @@
 function addFriend(userId, userName, button) {
     // Désactiver le bouton pendant la requête
     button.disabled = true;
-    button.innerHTML = '⏳ Ajout...';
+    button.innerHTML = ' Ajout...';
     
     // Récupérer le CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');

@@ -282,11 +282,16 @@
         --accent-2: #79a7e3;
     }
 
-    #registerPage {
-        background:
+    html, body {
+        height: 100%;
+        background: var(--bg);
+    }
+
+    body {
+        background-color: var(--bg);
+        background-image:
             radial-gradient(1200px 500px at -10% -20%, rgba(56, 109, 166, 0.18), transparent 60%),
-            radial-gradient(900px 400px at 110% -10%, rgba(121, 167, 227, 0.15), transparent 60%),
-            linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
+            radial-gradient(900px 400px at 110% -10%, rgba(121, 167, 227, 0.15), transparent 60%);
         min-height: 100vh;
         padding: 40px 20px;
     }
@@ -555,7 +560,7 @@
     }
 
     @media (max-width: 768px) {
-        #registerPage {
+        body {
             padding: 20px 10px;
         }
 

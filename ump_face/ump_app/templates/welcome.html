@@ -85,7 +85,7 @@
 
             <!-- Formulaire de publication -->
             <div class="post-form-card">
-                <h3>Publier un message</h3>
+                <h3>Publier un message </h3>
                 
                 <!-- Afficher les erreurs du formulaire -->
                 {% if form.errors %}
@@ -187,19 +187,32 @@
                 {% endif %}
             </div>
 
-            <div class="stats-widget">
-                <h3>Statistiques</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-number">{{ logged_user.amis.count }}</span>
-                        <span class="stat-label">Amis</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ messages|length }}</span>
-                        <span class="stat-label">Messages</span>
-                    </div>
-                </div>
-
+            <div class="friends-widget">
+                <h3>Ma Faculté : {{ logged_user.faculty.nom }} ({{ members_same_faculty.count }})</h3>
+                
+                {% if members_same_faculty %}
+                    <ul class="friends-list">
+                        {% for membre in members_same_faculty %}
+                            <li class="friend-item">
+                                <!-- Remplacez 'view_profile' par le nom de votre URL de profil -->
+                                <a href="{% url 'view_profile' membre.id %}" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; width:100%;">
+                                    <div class="friend-avatar" style="background-color: #007bff; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                        {{ membre.prenom.0|upper }}{{ membre.nom.0|upper }}
+                                    </div>
+                                    <span class="friend-name">
+                                        {{ membre.prenom }} {{ membre.nom }}
+                                        <!-- Petit badge pour différencier Étudiant / Employé -->
+                                        <small style="display:block; color:gray; font-size: 0.8em;">
+                                            {% if membre.student %} Étudiant {% elif membre.employee %} Employé {% endif %}
+                                        </small>
+                                    </span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-friends">Aucun autre membre dans votre faculté pour le moment.</p>
+                {% endif %}
             </div>
         </aside>
     </div>
@@ -512,7 +525,7 @@
     
     .post-form-card {
         background: linear-gradient(135deg, rgba(56, 109, 166, 0.12), rgba(17, 28, 46, 0.92));
-        padding: 20px;
+        padding: 0px 20px 15px 20px    ;
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         transition: all 0.3s;
@@ -520,7 +533,7 @@
     }
 
     .post-form { display: flex; flex-direction: column; gap: 12px; }
-    .post-form-actions { display: flex; justify-content: flex-end; }
+    .post-form-actions { display: flex; justify-content: flex-end; margin-top: -29px; }
     
     .post-form-card:hover {
         box-shadow: var(--shadow-hover);
@@ -665,7 +678,7 @@
     /* Messages Feed */
     .messages-feed {
         background: linear-gradient(135deg, rgba(56, 109, 166, 0.12), rgba(17, 28, 46, 0.92));
-        padding: 14px;
+        padding: 8px 12px; /* réduit l'espace entre la bordure et le premier message */
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         border: 1px solid var(--line);
